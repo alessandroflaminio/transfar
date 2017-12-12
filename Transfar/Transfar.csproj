@@ -54,9 +54,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Client.cs" />
     <Compile Include="ReceivingFileWindow.xaml.cs">
       <DependentUpon>ReceivingFileWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Server.cs" />
     <Page Include="ClientDiscoveryWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
