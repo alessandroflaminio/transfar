@@ -11,13 +11,34 @@ namespace Transfar
 {
     public class Client
     {
+        private UdpClient udpClient;
+        private Byte[] announcementBytes;
+        private IPEndPoint multicastEndpoint;
+        TcpListener tcpListener;
+
         private const string tfString = "TransferFileCS port "; //Stringa da inviare in broadcast
         private static string multicastAddress = "239.255.42.99";
         private const int udpPort = 51000; //Porta di ascolto server UDP
 
-        public static string path = "C://Users//Alessandro Flaminio//Desktop//Test"; //Path di ricezione file che andrebbe specificato tramite GUI
+        public static string path = "C://Users//Alessandro//Desktop//Test"; //Path di ricezione file che andrebbe specificato tramite GUI
         public static int tcpPort = 50000; //Porta di di ascolto client TCP
         //Vorrei poter settare queste cose via software e dunque riavviare il thread di segnalazione della presenza
+
+        public Client()
+        {
+            udpClient = new UdpClient();
+            announcementBytes = Encoding.ASCII.GetBytes(tfString + tcpPort);
+            multicastEndpoint = new IPEndPoint(IPAddress.Parse(multicastAddress), udpPort);
+
+            tcpListener = new TcpListener(IPAddress.Any, tcpPort);
+            tcpListener.Start();
+        }
+
+        public void Dispose()
+        {
+            udpClient.Dispose();
+            tcpListener.Stop();
+        }
 
         //Funzione per ottenere tutti gli indirizzi IP assegnati al PC (non utilizzata).
         public static List<string> GetLocalIPAddress()
@@ -42,21 +63,13 @@ namespace Transfar
          * Tramite GUI bisognerebbe attivare un thread che esegue questa funzione.
          * Bisognerebbe uscire dal while premendo un pulsante da GUI.
          */
-        public static void Announce()
+        public void Announce()
         {
-            using (UdpClient udpClient = new UdpClient())
-            {
-                //udpClient.JoinMulticastGroup(IPAddress.Parse(multicastAddress)); Devo solo inviare nel gruppo multicast
-                Byte[] sendBytes = Encoding.ASCII.GetBytes(tfString + tcpPort);
-
-                Console.WriteLine("[CLIENT] Sending broadcast datagrams...");
-                while (true)
-                {
-                    IPEndPoint multicastEndpoint = new IPEndPoint(IPAddress.Parse(multicastAddress), udpPort);
-                    udpClient.Send(sendBytes, sendBytes.Length, multicastEndpoint);
-                    Thread.Sleep(50);
-                }
-            }
+            //udpClient.JoinMulticastGroup(IPAddress.Parse(multicastAddress)); Devo solo inviare nel gruppo multicast
+            Console.WriteLine("[CLIENT] Sending broadcast datagrams...");
+            
+            udpClient.Send(announcementBytes, announcementBytes.Length, multicastEndpoint);
+            //Thread.Sleep(50);
         }
 
         /*
@@ -64,26 +77,21 @@ namespace Transfar
          * Ad ogni nuova richiesta crea un nuovo thread che si occupa della vera e propria ricezione.
          * Bisognerebbe uscire dal while a causa dello stesso evento che interrompe la Broadcast()
          */
-        public static void ListenRequests()
+        public TcpClient ListenRequests()
         {
-            TcpListener tcpListener = new TcpListener(IPAddress.Any, tcpPort);
-            tcpListener.Start();
+            Console.WriteLine("[CLIENT] Waiting for incoming file transfers...");
+            TcpClient client = tcpListener.AcceptTcpClient(); //Si blocca fino a che non riceve nuove richieste
+            return client;
 
-            while (true)
-            {
-                Console.WriteLine("[CLIENT] Waiting for incoming file transfers...");
-                TcpClient client = tcpListener.AcceptTcpClient(); //Si blocca fino a che non riceve nuove richieste
+            //Thread receiverThread = new Thread(() => ReceiveFile(client)); //Lambda function per passare il parametro al thread
+            //receiverThread.Start();
+            //while (!receiverThread.IsAlive);
+            ////Bisogna vedere la questione del joining del thread
 
-                Thread receiverThread = new Thread(() => ReceiveFile(client)); //Lambda function per passare il parametro al thread
-                receiverThread.Start();
-                while (!receiverThread.IsAlive);
-                //Bisogna vedere la questione del joining del thread
-            }
-
-            tcpListener.Stop();
+            //tcpListener.Stop();
         }
 
-        private static void ReceiveFile(TcpClient client)
+        public static void ReceiveFile(TcpClient client)
         {
             Console.WriteLine("[CLIENT] Receiving new file...");
 

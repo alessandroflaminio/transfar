@@ -67,6 +67,11 @@ namespace Transfar
             progressBar.Value = 0;
         }
 
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            server.Dispose();
+        }
+
         private void ReportProgress(int value)
         {
             progressBar.Value = value; // Attualmente il primo progresso è 0, controllare come viene assegnato il Report nella Async

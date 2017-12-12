@@ -26,6 +26,11 @@ namespace Transfar
 
         }
 
+        public void Dispose()
+        {
+            udpClient.Dispose();
+        }
+
         /*
          * Metodo che si occupa della scoperta di host disponibili.
          * Il while (availableClients.Count < 1) dovrebbe essere interrotto da un pulsante presente nella GUI.

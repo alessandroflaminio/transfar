@@ -7,7 +7,9 @@
         mc:Ignorable="d"
         Title="Transfar" Height="350" Width="525">
     <Grid>
-        <Button Content="Start discovery" HorizontalAlignment="Left" Margin="32,279,0,0" VerticalAlignment="Top" Width="109" Click="Button_Click"/>
+        <Button x:Name="discoveryButton" Content="Start discovery" HorizontalAlignment="Left" Margin="32,279,0,0" VerticalAlignment="Top" Width="109" Click="Button_Click"/>
+        <CheckBox x:Name="availabilityCheckbox" Content="Enable discovery" HorizontalAlignment="Left" Margin="345,282,0,0" VerticalAlignment="Top" Checked="AvailabilityCheckbox_Checked" Unchecked="AvailabilityCheckbox_Unchecked"/>
+        <Image Margin="45,34,53,198" Source="Logomakr_7SyVEb.png" Stretch="Fill"/>
 
     </Grid>
 </Window>
