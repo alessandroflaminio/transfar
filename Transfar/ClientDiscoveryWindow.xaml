@@ -1,0 +1,16 @@
+﻿<Window x:Class="Transfar.ClientDiscoveryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Transfar"
+        mc:Ignorable="d"
+        Title="ClientDiscoveryWindow" Height="300" Width="300">
+    <Grid>
+        <ProgressBar HorizontalAlignment="Left" Height="25" Margin="10,184,0,0" VerticalAlignment="Top" Width="272"/>
+        <Button Content="Start" HorizontalAlignment="Left" Margin="29,229,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="Stop" HorizontalAlignment="Left" Margin="191,229,0,0" VerticalAlignment="Top" Width="75"/>
+        <ListBox HorizontalAlignment="Left" Height="162" Margin="10,10,0,0" VerticalAlignment="Top" Width="272"/>
+
+    </Grid>
+</Window>
