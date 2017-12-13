@@ -9,6 +9,15 @@ using System.Threading;
 
 namespace Transfar
 {
+    public class FileTransferData
+    {
+        public string Path { get; set; }
+        public long Length { get; set; }
+        public NetworkStream NetworkStream { get; set; }
+        public FileStream FileStream { get; set; }
+    }
+
+
     public class Client
     {
         private UdpClient udpClient;
@@ -126,6 +135,63 @@ namespace Transfar
                 Console.WriteLine("[CLIENT] Received length: " + fileLength);
                 Console.WriteLine("[CLIENT] Received file name: " + fileName);
             }
+        }
+
+        public static FileTransferData StartReceiving(TcpClient client)
+        {
+            FileTransferData fileTransferData = new FileTransferData();
+            NetworkStream netStream = client.GetStream();
+
+            Console.WriteLine("[CLIENT] Receiving new file...");
+
+            byte[] fileNameLengthBuffer = new byte[sizeof(int)];
+            netStream.Read(fileNameLengthBuffer, 0, fileNameLengthBuffer.Length);
+            int fileNameLength = BitConverter.ToInt32(fileNameLengthBuffer, 0);
+
+            byte[] fileLengthBuffer = new byte[sizeof(long)];
+            netStream.Read(fileLengthBuffer, 0, fileLengthBuffer.Length);
+
+            byte[] fileNameBuffer = new byte[fileNameLength];
+            netStream.Read(fileNameBuffer, 0, fileNameBuffer.Length);
+
+            string fileName = Encoding.Unicode.GetString(fileNameBuffer);
+            long fileLength = BitConverter.ToInt64(fileLengthBuffer, 0);
+            Console.WriteLine("[CLIENT] Received length: " + fileLength);
+            Console.WriteLine("[CLIENT] Received file name: " + fileName);
+
+            DirectoryInfo di = Directory.CreateDirectory(path);
+
+            fileTransferData.Path = path + "//" + fileName;
+            fileTransferData.Length = fileLength;
+            fileTransferData.NetworkStream = netStream;
+            fileTransferData.FileStream = File.Create(fileTransferData.Path);
+            return fileTransferData;
+        }
+
+        // To be in a while loop
+        public static void Receive(FileTransferData fileTransferData)
+        {
+            var buffer = new byte[256 * 1024];
+            int bytesRead;
+            if (((bytesRead = fileTransferData.NetworkStream.Read(buffer, 0, buffer.Length)) > 0) && (fileTransferData.Length > 0))
+            {
+                fileTransferData.FileStream.Write(buffer, 0, bytesRead);
+                fileTransferData.Length -= bytesRead;
+            }
+        }
+
+        public static void EndReceiving(FileTransferData fileTransferData)
+        {
+            fileTransferData.FileStream.Flush();
+            fileTransferData.NetworkStream.Dispose();
+            fileTransferData.FileStream.Dispose();
+        }
+
+        public static void CancelReceiving(FileTransferData fileTransferData)
+        {
+            fileTransferData.NetworkStream.Dispose();
+            fileTransferData.FileStream.Dispose();
+            File.Delete(fileTransferData.Path);
         }
     }
 }
