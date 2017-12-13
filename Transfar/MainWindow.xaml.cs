@@ -63,6 +63,7 @@ namespace Transfar
         {
             ReceivingFileWindow receivingFileWindow = new ReceivingFileWindow(tcpClient);
             receivingFileWindow.Show();
+            receivingFileWindow.Activate();
         }
 
         private async Task AnnounceAsync(CancellationToken token)

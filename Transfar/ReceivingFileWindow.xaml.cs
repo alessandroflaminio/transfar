@@ -38,9 +38,12 @@ namespace Transfar
         private async void Yes_Button_Click(object sender, RoutedEventArgs e)
         {
             progressBar.Visibility = Visibility.Visible;
+            cancelButton.Visibility = Visibility.Visible;
+            yesButton.Visibility = Visibility.Hidden;
+            noButton.Visibility = Visibility.Hidden;
 
             cts = new CancellationTokenSource();
-            var progressIndicator = new Progress<int>(ReportProgress);
+            var progressIndicator = new Progress<double>(ReportProgress);
 
             try
             {
@@ -50,19 +53,27 @@ namespace Transfar
             {
                 Console.WriteLine("Cancellation requested!");
             }
+
+            this.Close();
         }
 
         private void No_Button_Click(object sender, RoutedEventArgs e)
         {
-
+            tcpClient.Dispose();
+            this.Close();
         }
 
-        private void ReportProgress(int value)
+        private void Cancel_Button_Click(object sender, RoutedEventArgs e)
+        {
+            cts.Cancel();
+        }
+
+        private void ReportProgress(double value)
         {
             progressBar.Value = value;
         }
 
-        private async Task ReceiveFileAsync(IProgress<int> progressIndicator, CancellationToken token)
+        private async Task ReceiveFileAsync(IProgress<double> progressIndicator, CancellationToken token)
         {
             await Task.Run(async () => // async put so that the exception is thrown to the caller
             {
@@ -77,7 +88,10 @@ namespace Transfar
                     {
                         Client.Receive(fileTransferData);
                         token.ThrowIfCancellationRequested();
-                        progressIndicator.Report((int) (fileTransferData.Length / originalLength) * 100);
+
+                        Thread.Sleep(500); // Waiting for testing purposes
+
+                        progressIndicator.Report(100 - ((float) fileTransferData.Length / originalLength * 100));
                     }
 
                     Client.EndReceiving(fileTransferData);
