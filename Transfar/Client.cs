@@ -11,6 +11,7 @@ namespace Transfar
 {
     public class FileTransferData
     {
+        public string Name { get; set; }
         public string Path { get; set; }
         public long Length { get; set; }
         public NetworkStream NetworkStream { get; set; }
@@ -161,6 +162,7 @@ namespace Transfar
 
             DirectoryInfo di = Directory.CreateDirectory(path);
 
+            fileTransferData.Name = fileName;
             fileTransferData.Path = path + "//" + fileName;
             fileTransferData.Length = fileLength;
             fileTransferData.NetworkStream = netStream;

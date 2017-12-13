@@ -9,7 +9,10 @@
     <Grid>
         <Button x:Name="discoveryButton" Content="Start discovery" HorizontalAlignment="Left" Margin="32,279,0,0" VerticalAlignment="Top" Width="109" Click="Button_Click"/>
         <CheckBox x:Name="availabilityCheckbox" Content="Enable discovery" HorizontalAlignment="Left" Margin="345,282,0,0" VerticalAlignment="Top" Checked="AvailabilityCheckbox_Checked" Unchecked="AvailabilityCheckbox_Unchecked"/>
-        <Image Margin="45,34,53,198" Source="Logomakr_7SyVEb.png" Stretch="Fill"/>
+        <Image Margin="49,79,49,153.5" Source="Logomakr_7SyVEb.png" Stretch="Fill"/>
+        <Button x:Name="settingsButton" Margin="0,25,25,0" VerticalAlignment="Top" Click="Settings_Button_Click" Height="45" HorizontalAlignment="Right" Width="45">
+            <Image Height="36" Source="appbar.settings.png" Stretch="Uniform" Width="36"/>
+        </Button>
 
     </Grid>
 </Window>

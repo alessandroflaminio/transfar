@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -22,6 +23,9 @@ namespace Transfar
     public partial class ReceivingFileWindow : Window
     {
         private TcpClient tcpClient;
+        private long originalLength;
+        private FileTransferData fileTransferData;
+
         private CancellationTokenSource cts;
 
         public ReceivingFileWindow()
@@ -32,7 +36,11 @@ namespace Transfar
         public ReceivingFileWindow(TcpClient tcpClient)
         {
             this.tcpClient = tcpClient;
+            fileTransferData = Client.StartReceiving(tcpClient);
+            originalLength = fileTransferData.Length;
+
             InitializeComponent();
+            fileInfo.Text = fileInfo.Text.Replace("CLIENT_NAME", tcpClient.Client.RemoteEndPoint.ToString()).Replace("FILE_NAME", fileTransferData.Name);
         }
 
         private async void Yes_Button_Click(object sender, RoutedEventArgs e)
@@ -77,9 +85,6 @@ namespace Transfar
         {
             await Task.Run(async () => // async put so that the exception is thrown to the caller
             {
-
-                var fileTransferData = Client.StartReceiving(tcpClient);
-                long originalLength = fileTransferData.Length;
                 try
                 {
                     token.ThrowIfCancellationRequested();

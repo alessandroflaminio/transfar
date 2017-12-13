@@ -11,5 +11,6 @@
         <Button x:Name="noButton" Content="No" Margin="187,198,30,0" VerticalAlignment="Top" Click="No_Button_Click"/>
         <ProgressBar x:Name="progressBar" Height="31" Margin="10,109,10,0" VerticalAlignment="Top" Visibility="Hidden"/>
         <Button x:Name="cancelButton" Content="Cancel transfer" Margin="96,198,96,0" VerticalAlignment="Top" Click="Cancel_Button_Click" Visibility="Hidden"/>
+        <TextBlock x:Name="fileInfo" HorizontalAlignment="Left" Margin="30,145,0,0" TextWrapping="Wrap" Text="Do you want to receive file FILE_NAME from CLIENT_NAME?" VerticalAlignment="Top" Height="32" Width="235"/>
     </Grid>
 </Window>
