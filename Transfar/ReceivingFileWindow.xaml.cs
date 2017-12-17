@@ -67,6 +67,7 @@ namespace Transfar
 
         private void No_Button_Click(object sender, RoutedEventArgs e)
         {
+            Client.CancelReceiving(fileTransferData);
             tcpClient.Dispose();
             this.Close();
         }

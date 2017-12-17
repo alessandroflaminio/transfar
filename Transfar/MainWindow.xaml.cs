@@ -96,7 +96,10 @@ namespace Transfar
 
         private void Settings_Button_Click(object sender, RoutedEventArgs e)
         {
-
+            SettingsWindow settingsWindow = new SettingsWindow(this);
+            settingsWindow.Show();
+            settingsWindow.Activate();
+            this.Hide();
             //using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
             //{
             //    System.Windows.Forms.DialogResult result = dialog.ShowDialog();

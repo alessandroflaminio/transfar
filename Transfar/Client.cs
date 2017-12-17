@@ -30,7 +30,7 @@ namespace Transfar
         private static string multicastAddress = "239.255.42.99";
         private const int udpPort = 51000; //Porta di ascolto server UDP
 
-        public static string path = "C://Users//Alessandro//Desktop//Test"; //Path di ricezione file che andrebbe specificato tramite GUI
+        public static string path = "C://Users//Riccardo//Desktop//Test"; //Path di ricezione file che andrebbe specificato tramite GUI
         public static int tcpPort = 50000; //Porta di di ascolto client TCP
         //Vorrei poter settare queste cose via software e dunque riavviare il thread di segnalazione della presenza
 

@@ -3,10 +3,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Transfar"
         mc:Ignorable="d"
-        Title="SettingsWindow" Height="124" Width="248">
+        Title="SettingsWindow" Height="352" Width="752" Closing="Window_Closing">
     <Grid>
-
+        <Button x:Name="filePickerButton" Click="filePickerButton_Click" Content="Select folder" Margin="451,0,0,269" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="266"/>
+        <TextBlock x:Name ="directoryPathTextBox" Height="25" Margin="22,0,313,269" TextWrapping="Wrap" Text="{Binding Path=DirectoryPath, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Bottom" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+        <TextBlock x:Name ="directoryPathTextBox_Copy" HorizontalAlignment="Left" Height="25" Margin="22,30,0,314" TextWrapping="Wrap" Text="Selected folder:"/>
+        <CheckBox Content="CheckBox" HorizontalAlignment="Left" Margin="22,166,0,0" VerticalAlignment="Top"/>
+        <CheckBox Content="CheckBox" HorizontalAlignment="Left" Margin="22,108,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="cancelButton" Content="Cancel" Margin="0,244,22,24" HorizontalAlignment="Right" Width="75"/>
+        <Button x:Name="okButton" Content="OK" Margin="0,244,222,24" HorizontalAlignment="Right" Width="75" Click="okButton_Click"/>
+        <Button x:Name="applyButton" Content="Apply" Margin="0,244,122,24" HorizontalAlignment="Right" Width="75" Click="applyButton_Click" IsEnabled="False"/>
+        <Button x:Name="resetPathButton" Click="resetPathButton_Click" Content="Reset default path" Margin="451,0,0,225" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="266"/>
     </Grid>
 </Window>
