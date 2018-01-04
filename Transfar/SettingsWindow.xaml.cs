@@ -69,6 +69,18 @@ namespace Transfar
                 resetPathButton.IsEnabled = true;
             }
             else resetPathButton.IsEnabled = false;
+
+            // The event handlers are detached and reattached when setting the values from the settings xml
+            autoAcceptCheckBox.Checked -= autoAcceptCheckBox_Checked;
+            autoReplaceCheckBox.Checked -= autoReplaceCheckBox_Checked;
+            autoAcceptCheckBox.Checked -= autoAcceptCheckBox_Unchecked;
+            autoReplaceCheckBox.Checked -= autoReplaceCheckBox_Unchecked;
+            autoAcceptCheckBox.IsChecked = Properties.Settings.Default.AutoAccept;
+            autoReplaceCheckBox.IsChecked = Properties.Settings.Default.AutoReplace;
+            autoAcceptCheckBox.Checked += autoAcceptCheckBox_Checked;
+            autoReplaceCheckBox.Checked += autoReplaceCheckBox_Checked;
+            autoAcceptCheckBox.Checked += autoAcceptCheckBox_Unchecked;
+            autoReplaceCheckBox.Checked += autoReplaceCheckBox_Unchecked;
         }
 
         protected void OnPropertyChanged(string propertyName)
@@ -86,38 +98,13 @@ namespace Transfar
 
         private void filePickerButton_Click(object sender, RoutedEventArgs e)
         {
-            // Create the OpenFIleDialog object
+            // Create the OpenFileDialog object
             using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
             {
                 System.Windows.Forms.DialogResult result = dialog.ShowDialog();
                 DirectoryPath = dialog.SelectedPath;
                 System.Console.WriteLine(dialog.SelectedPath);
             }
-            //Microsoft.Win32.FolderBrowserDialog openPicker = new Microsoft.Win32.OpenFileDialog();
-
-            //// Add file filters
-            //// We are using excel files in this example
-            //openPicker.DefaultExt = ".xslt";
-            //openPicker.Filter = "Excel Files|*.xls;*.xlsx;*.xlsm";
-
-            //// Display the OpenFileDialog by calling ShowDialog method
-            //Nullable<bool> result = openPicker.ShowDialog();
-
-            //// Check to see if we have a result 
-            //if (result == true)
-            //{
-            //    // Application now has read/write access to the picked file
-            //    // I am saving the file path to a textbox in the UI to display to the user
-            //    // as well as a fileDirectory variable to pass to a method
-            //    filePathTextBox.Text = openPicker.FileName.ToString();
-            //    fileDirectory = openPicker.FileName.ToString();
-            //}
-            //else
-            //{
-            //    // Display to the user that the selection process was cancelled
-            //    // Not necessary, but helpful when I was debugging the code
-            //    OutputTextBlock.Text = "Operation cancelled.";
-            //}
         }
 
         private void applyButton_Click(object sender, RoutedEventArgs e)
@@ -135,6 +122,35 @@ namespace Transfar
         {
             Properties.Settings.Default.Save();
             applyButton.IsEnabled = false;
+            this.Close();
+        }
+       
+        private void autoAcceptCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.AutoAccept = true;
+            applyButton.IsEnabled = true;
+        }
+
+        private void autoReplaceCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.AutoReplace = true;
+            applyButton.IsEnabled = true;
+        }
+
+        private void autoAcceptCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.AutoAccept = false;
+            applyButton.IsEnabled = true;
+        }
+
+        private void autoReplaceCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.AutoReplace = false;
+            applyButton.IsEnabled = true;
+        }
+
+        private void cancelButton_Click(object sender, RoutedEventArgs e)
+        {
             this.Close();
         }
 
