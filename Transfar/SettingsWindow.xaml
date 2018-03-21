@@ -13,7 +13,7 @@
         <CheckBox x:Name="autoReplaceCheckBox" Content="Replace automatically files with same name" HorizontalAlignment="Left" Checked="autoReplaceCheckBox_Checked" Unchecked="autoReplaceCheckBox_Unchecked" Margin="28,211,0,224" Width="190"/>
         <CheckBox x:Name="autoAcceptCheckBox" Content="Accept automatically transfers" HorizontalAlignment="Left" Checked="autoAcceptCheckBox_Checked" Unchecked="autoAcceptCheckBox_Unchecked" Margin="28,182,0,256" Width="139"/>
         <UniformGrid Columns="3" Margin="215,384,216,54">
-            <Button x:Name="okButton" Width="75" Content="OK" Click="okButton_Click"/>
+            <Button x:Name="okButton" Content="OK" Click="okButton_Click" Margin="-39,-62,-9,0"/>
             <Button x:Name="cancelButton" Width="75" Content="Cancel" Click="cancelButton_Click"/>
             <Button x:Name="applyButton" Width="75" Content="Apply" Click="applyButton_Click" IsEnabled="False"/>
         </UniformGrid>
