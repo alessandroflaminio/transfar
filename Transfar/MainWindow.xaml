@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Transfar"
         mc:Ignorable="d"
-        Title="Transfar" Height="350" Width="525">
+        Title="Transfar" Height="350" Width="525" ResizeMode="NoResize">
     <Grid>
         <Button x:Name="discoveryButton" Content="Start discovery" HorizontalAlignment="Left" Margin="32,279,0,0" VerticalAlignment="Top" Width="109" Click="Button_Click"/>
         <CheckBox x:Name="availabilityCheckbox" Content="Enable discovery" HorizontalAlignment="Left" Margin="345,282,0,0" VerticalAlignment="Top" Checked="AvailabilityCheckbox_Checked" Unchecked="AvailabilityCheckbox_Unchecked"/>

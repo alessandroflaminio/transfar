@@ -1,18 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Transfar
 {
@@ -64,23 +52,37 @@ namespace Transfar
             InitializeComponent();
             this.DataContext = this; // This is for the binding of the TextBox (Binding Path=DirectoryPath)
 
+            // The event handlers are detached and reattached when setting the values from the settings xml
+            {
+                defaultFolderCheckBox.Checked -= defaultFolderCheckBox_Checked;
+                autoAcceptCheckBox.Checked -= autoAcceptCheckBox_Checked;
+                autoReplaceCheckBox.Checked -= autoReplaceCheckBox_Checked;
+                defaultFolderCheckBox.Unchecked -= defaultFolderCheckBox_Unchecked;
+                autoAcceptCheckBox.Unchecked -= autoAcceptCheckBox_Unchecked;
+                autoReplaceCheckBox.Unchecked -= autoReplaceCheckBox_Unchecked;
+                defaultFolderCheckBox.IsChecked = Properties.Settings.Default.SetPath;
+                autoAcceptCheckBox.IsChecked = Properties.Settings.Default.AutoAccept;
+                autoReplaceCheckBox.IsChecked = Properties.Settings.Default.AutoReplace;
+                defaultFolderCheckBox.Checked += defaultFolderCheckBox_Checked;
+                autoAcceptCheckBox.Checked += autoAcceptCheckBox_Checked;
+                autoReplaceCheckBox.Checked += autoReplaceCheckBox_Checked;
+                defaultFolderCheckBox.Unchecked += defaultFolderCheckBox_Unchecked;
+                autoAcceptCheckBox.Unchecked += autoAcceptCheckBox_Unchecked;
+                autoReplaceCheckBox.Unchecked += autoReplaceCheckBox_Unchecked;
+            }
+
             if (DirectoryPath != defaultPath)
             {
                 resetPathButton.IsEnabled = true;
             }
             else resetPathButton.IsEnabled = false;
 
-            // The event handlers are detached and reattached when setting the values from the settings xml
-            autoAcceptCheckBox.Checked -= autoAcceptCheckBox_Checked;
-            autoReplaceCheckBox.Checked -= autoReplaceCheckBox_Checked;
-            autoAcceptCheckBox.Checked -= autoAcceptCheckBox_Unchecked;
-            autoReplaceCheckBox.Checked -= autoReplaceCheckBox_Unchecked;
-            autoAcceptCheckBox.IsChecked = Properties.Settings.Default.AutoAccept;
-            autoReplaceCheckBox.IsChecked = Properties.Settings.Default.AutoReplace;
-            autoAcceptCheckBox.Checked += autoAcceptCheckBox_Checked;
-            autoReplaceCheckBox.Checked += autoReplaceCheckBox_Checked;
-            autoAcceptCheckBox.Checked += autoAcceptCheckBox_Unchecked;
-            autoReplaceCheckBox.Checked += autoReplaceCheckBox_Unchecked;
+            if (!Properties.Settings.Default.SetPath)
+            {
+                directoryPathTextBox.IsEnabled = false;
+                filePickerButton.IsEnabled = false;
+                resetPathButton.IsEnabled = false;
+            }
         }
 
         protected void OnPropertyChanged(string propertyName)
@@ -94,6 +96,28 @@ namespace Transfar
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             mainWindow.Show();
+        }
+
+        private void defaultFolderCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.SetPath = true;
+
+            directoryPathTextBox.IsEnabled = true;
+            filePickerButton.IsEnabled = true;
+            resetPathButton.IsEnabled = true;
+
+            applyButton.IsEnabled = true;
+        }
+
+        private void defaultFolderCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.SetPath = false;
+
+            directoryPathTextBox.IsEnabled = false;
+            filePickerButton.IsEnabled = false;
+            resetPathButton.IsEnabled = false;
+
+            applyButton.IsEnabled = true;
         }
 
         private void filePickerButton_Click(object sender, RoutedEventArgs e)
@@ -153,7 +177,5 @@ namespace Transfar
         {
             this.Close();
         }
-
-        // TODO: Aggiungere checkbox per l'accettazione automatica dei trasferimenti ed aggiungere checkbox per la sostituzione automatica dei file in caso di nome identico
     }
 }

@@ -4,18 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="SettingsWindow" Height="485" Width="635" Closing="Window_Closing" ResizeMode="NoResize">
-    <Grid>
-        <TextBlock x:Name ="directoryPathTextBox_Copy" TextWrapping="Wrap" Text="Selected folder:" Margin="28,126,536,312"/>
-        <TextBlock x:Name ="directoryPathTextBox" TextWrapping="Wrap" Text="{Binding DirectoryPath, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Margin="93,125,294,313"/>
-        <Button x:Name="resetPathButton" Click="resetPathButton_Click" Content="Reset default path" Margin="350,157,197,283"/>
-        <Button x:Name="filePickerButton" Click="filePickerButton_Click" Content="Select folder" HorizontalAlignment="Left" Width="82" Margin="350,126,0,313"/>
-        <CheckBox x:Name="autoReplaceCheckBox" Content="Replace automatically files with same name" HorizontalAlignment="Left" Checked="autoReplaceCheckBox_Checked" Unchecked="autoReplaceCheckBox_Unchecked" Margin="28,211,0,224" Width="190"/>
-        <CheckBox x:Name="autoAcceptCheckBox" Content="Accept automatically transfers" HorizontalAlignment="Left" Checked="autoAcceptCheckBox_Checked" Unchecked="autoAcceptCheckBox_Unchecked" Margin="28,182,0,256" Width="139"/>
-        <UniformGrid Columns="3" Margin="215,384,216,54">
-            <Button x:Name="okButton" Content="OK" Click="okButton_Click" Margin="-39,-62,-9,0"/>
-            <Button x:Name="cancelButton" Width="75" Content="Cancel" Click="cancelButton_Click"/>
-            <Button x:Name="applyButton" Width="75" Content="Apply" Click="applyButton_Click" IsEnabled="False"/>
-        </UniformGrid>
+        Title="SettingsWindow" Height="330" Width="599" Closing="Window_Closing" ResizeMode="NoResize">
+    <Grid Margin="0" Height="307" VerticalAlignment="Top">
+        <CheckBox x:Name="defaultFolderCheckBox" Content="Save automatically files in this location:" Margin="28,31,0,0" HorizontalAlignment="Left" Width="242" Height="18" VerticalAlignment="Top" Checked="defaultFolderCheckBox_Checked" Unchecked="defaultFolderCheckBox_Unchecked"/>
+        <TextBlock x:Name ="directoryPathTextBox" TextWrapping="Wrap" Text="{Binding DirectoryPath, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Margin="28,84,0,0" Height="25" HorizontalAlignment="Left" Width="242" VerticalAlignment="Top"/>
+        <Button x:Name="resetPathButton" Click="resetPathButton_Click" Content="Reset default path" Margin="417,84,0,0" Height="25" HorizontalAlignment="Left" Width="129" VerticalAlignment="Top"/>
+        <Button x:Name="filePickerButton" Click="filePickerButton_Click" Content="Select folder" Margin="306,84,0,0" Height="25" HorizontalAlignment="Left" Width="82" VerticalAlignment="Top"/>
+        <CheckBox x:Name="autoReplaceCheckBox" Content="Automatically replace already existing files" HorizontalAlignment="Left" Checked="autoReplaceCheckBox_Checked" Unchecked="autoReplaceCheckBox_Unchecked" Margin="28,167,0,0" Width="256" Height="25" VerticalAlignment="Top"/>
+        <CheckBox x:Name="autoAcceptCheckBox" Content="Automatically accept transfers" HorizontalAlignment="Left" Checked="autoAcceptCheckBox_Checked" Unchecked="autoAcceptCheckBox_Unchecked" Margin="28,137,0,0" Width="190" Height="25" VerticalAlignment="Top"/>
+        <Button x:Name="okButton" Content="OK" Click="okButton_Click" Margin="336,246,0,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Width="65"/>
+        <Button x:Name="cancelButton" Content="Cancel" Click="cancelButton_Click" Margin="406,246,0,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Width="70"/>
+        <Button x:Name="applyButton" Content="Apply" Click="applyButton_Click" IsEnabled="False" Margin="481,246,0,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Width="65"/>
+        <Label Content="Selected folder:" Margin="28,59,0,0" Height="25" HorizontalAlignment="Left" Width="92" VerticalAlignment="Top"/>
+        <Separator HorizontalAlignment="Left" Height="18" Margin="28,114,0,0" VerticalAlignment="Top" Width="518"/>
     </Grid>
 </Window>
