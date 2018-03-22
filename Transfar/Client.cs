@@ -30,12 +30,14 @@ namespace Transfar
         private static string multicastAddress = "239.255.42.99";
         private const int udpPort = 51000; //Porta di ascolto server UDP
 
-        public static string path = "C://Users//Riccardo//Desktop//Test"; //Path di ricezione file che andrebbe specificato tramite GUI
+        public String path; // TODO check that //"C://Users//Riccardo//Desktop//Test"; //Path di ricezione file che andrebbe specificato tramite GUI
         public static int tcpPort = 50000; //Porta di di ascolto client TCP
         //Vorrei poter settare queste cose via software e dunque riavviare il thread di segnalazione della presenza
 
         public Client()
         {
+            path = Properties.Settings.Default.Path;
+
             udpClient = new UdpClient();
             announcementBytes = Encoding.ASCII.GetBytes(tfString + tcpPort);
             multicastEndpoint = new IPEndPoint(IPAddress.Parse(multicastAddress), udpPort);
@@ -51,7 +53,7 @@ namespace Transfar
         }
 
         //Funzione per ottenere tutti gli indirizzi IP assegnati al PC (non utilizzata).
-        public static List<string> GetLocalIPAddress()
+        public List<string> GetLocalIPAddress()
         {
             List<string> myIps = new List<string>();
             var host = Dns.GetHostEntry(Dns.GetHostName());
@@ -101,7 +103,7 @@ namespace Transfar
             //tcpListener.Stop();
         }
 
-        public static void ReceiveFile(TcpClient client)
+        public void ReceiveFile(TcpClient client)
         {
             Console.WriteLine("[CLIENT] Receiving new file...");
 
@@ -138,7 +140,7 @@ namespace Transfar
             }
         }
 
-        public static FileTransferData StartReceiving(TcpClient client)
+        public FileTransferData StartReceiving(TcpClient client)
         {
             FileTransferData fileTransferData = new FileTransferData();
             NetworkStream netStream = client.GetStream();
@@ -171,7 +173,7 @@ namespace Transfar
         }
 
         // To be in a while loop
-        public static void Receive(FileTransferData fileTransferData)
+        public void Receive(FileTransferData fileTransferData)
         {
             var buffer = new byte[256 * 1024];
             int bytesRead;
@@ -182,14 +184,14 @@ namespace Transfar
             }
         }
 
-        public static void EndReceiving(FileTransferData fileTransferData)
+        public void EndReceiving(FileTransferData fileTransferData)
         {
             fileTransferData.FileStream.Flush();
             fileTransferData.NetworkStream.Dispose();
             fileTransferData.FileStream.Dispose();
         }
 
-        public static void CancelReceiving(FileTransferData fileTransferData)
+        public void CancelReceiving(FileTransferData fileTransferData)
         {
             fileTransferData.NetworkStream.Dispose();
             fileTransferData.FileStream.Dispose();

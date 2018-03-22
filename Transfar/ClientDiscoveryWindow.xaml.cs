@@ -99,5 +99,25 @@ namespace Transfar
                 }
             }, token);
         }
+
+        private void clientsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (clientsListBox.SelectedItem != null)
+            {
+                sendButton.IsEnabled = true;
+            }
+            else
+            {
+                sendButton.IsEnabled = false;
+            }
+        }
+
+        private void sendButton_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine(clientsListBox.SelectedItem);
+            SendingFileWindow sendingFileWindow = new SendingFileWindow();
+            sendingFileWindow.Show();
+            sendingFileWindow.Activate();
+        }
     }
 }

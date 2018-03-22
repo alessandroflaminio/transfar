@@ -22,12 +22,15 @@ namespace Transfar
     /// </summary>
     public partial class ReceivingFileWindow : Window
     {
+        private Client client;
         private TcpClient tcpClient;
         private long originalLength;
         private FileTransferData fileTransferData;
 
         private CancellationTokenSource cts;
 
+
+        // TODO: you should pass the client constructed in the MainWindow to the ReceivingFileWindow
         public ReceivingFileWindow()
         {
             InitializeComponent();
@@ -36,7 +39,7 @@ namespace Transfar
         public ReceivingFileWindow(TcpClient tcpClient)
         {
             this.tcpClient = tcpClient;
-            fileTransferData = Client.StartReceiving(tcpClient);
+            fileTransferData = client.StartReceiving(tcpClient);
             originalLength = fileTransferData.Length;
 
             InitializeComponent();
@@ -67,7 +70,7 @@ namespace Transfar
 
         private void No_Button_Click(object sender, RoutedEventArgs e)
         {
-            Client.CancelReceiving(fileTransferData);
+            client.CancelReceiving(fileTransferData);
             tcpClient.Dispose();
             this.Close();
         }
@@ -92,7 +95,7 @@ namespace Transfar
 
                     while (fileTransferData.Length > 0)
                     {
-                        Client.Receive(fileTransferData);
+                        client.Receive(fileTransferData);
                         token.ThrowIfCancellationRequested();
 
                         Thread.Sleep(500); // Waiting for testing purposes
@@ -100,11 +103,11 @@ namespace Transfar
                         progressIndicator.Report(100 - ((float) fileTransferData.Length / originalLength * 100));
                     }
 
-                    Client.EndReceiving(fileTransferData);
+                    client.EndReceiving(fileTransferData);
                 }
                 catch (OperationCanceledException)
                 {
-                    Client.CancelReceiving(fileTransferData);
+                    client.CancelReceiving(fileTransferData);
                     throw;
                 }
             }, token);
