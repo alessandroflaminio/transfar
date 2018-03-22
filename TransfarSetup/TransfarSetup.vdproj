@@ -28,13 +28,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D21EB59EE86E355108496591391542C9"
+        "OwnerKey" = "8:_FE0B33A884834256BE0E367C5A1E9FE3"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_FE0B33A884834256BE0E367C5A1E9FE3"
+        "OwnerKey" = "8:_D21EB59EE86E355108496591391542C9"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -55,6 +55,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6.1"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.6.1 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6.1"
+                    }
+                }
+            }
         }
         "Release"
         {
@@ -71,6 +87,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
     }
     "Deployable"
@@ -188,7 +212,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Transfar"
         "ProductCode" = "8:{42856D87-1F43-4046-A854-501F1C322A46}"
-        "PackageCode" = "8:{C8970BB6-B292-4A44-8664-B51B170800BC}"
+        "PackageCode" = "8:{0B1FA958-B2DA-495C-929B-42A30D749CE2}"
         "UpgradeCode" = "8:{B1469D7A-9A76-4305-9CC2-3A56E864C53E}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -288,25 +312,25 @@
             {
                 "Keys"
                 {
-                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_8B6AB42F761C40D1A0B68D538D94BC0E"
+                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_19E2CBAF72B648469DC176A4D3A081D6"
                     {
-                    "Name" = "8:DesktopBackground"
+                    "Name" = "8:Directory"
                     "Condition" = "8:"
                     "AlwaysCreate" = "11:FALSE"
                     "DeleteAtUninstall" = "11:FALSE"
                     "Transitive" = "11:FALSE"
                         "Keys"
                         {
-                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_1E81768FBBA24CCD825827167B5CD75C"
+                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_10355FD437964917BF256E9DE5E8D03A"
                             {
-                            "Name" = "8:Shell"
+                            "Name" = "8:shell"
                             "Condition" = "8:"
                             "AlwaysCreate" = "11:FALSE"
                             "DeleteAtUninstall" = "11:FALSE"
                             "Transitive" = "11:FALSE"
                                 "Keys"
                                 {
-                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_B0E4020E934E4B348C4074B914ED46C0"
+                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_9BC744D0401948DE990EB24B06C23C60"
                                     {
                                     "Name" = "8:Send with Transfar"
                                     "Condition" = "8:"
@@ -315,7 +339,7 @@
                                     "Transitive" = "11:FALSE"
                                         "Keys"
                                         {
-                                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_40FE68EB00984C39B48F0FA288ABD714"
+                                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_6457957827E14972AB4988A8834F611A"
                                             {
                                             "Name" = "8:command"
                                             "Condition" = "8:"
@@ -327,9 +351,9 @@
                                                 }
                                                 "Values"
                                                 {
-                                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_7BB26772519741BCAB5D8573845A38F4"
+                                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_F9E803B3832140DBB178DD75DD3FFAA2"
                                                     {
-                                                    "Name" = "8:(Default)"
+                                                    "Name" = "8:"
                                                     "Condition" = "8:"
                                                     "Transitive" = "11:FALSE"
                                                     "ValueTypes" = "3:1"
@@ -393,7 +417,71 @@
                                                 {
                                                     "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_24894533598C4665BDF9F65D6E4CD6AE"
                                                     {
-                                                    "Name" = "8:(Default)"
+                                                    "Name" = "8:"
+                                                    "Condition" = "8:"
+                                                    "Transitive" = "11:FALSE"
+                                                    "ValueTypes" = "3:1"
+                                                    "Value" = "8:C:\\\\Program Files\\\\Transfar\\\\Transfar\\\\Transfar.exe"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        "Values"
+                                        {
+                                        }
+                                    }
+                                }
+                                "Values"
+                                {
+                                }
+                            }
+                        }
+                        "Values"
+                        {
+                        }
+                    }
+                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_DEBC02A2519C4D3B973C8BB4365D3766"
+                    {
+                    "Name" = "8:Folder"
+                    "Condition" = "8:"
+                    "AlwaysCreate" = "11:FALSE"
+                    "DeleteAtUninstall" = "11:FALSE"
+                    "Transitive" = "11:FALSE"
+                        "Keys"
+                        {
+                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_AA4D18D1B5F84B219B2CC45B787E6C77"
+                            {
+                            "Name" = "8:shell"
+                            "Condition" = "8:"
+                            "AlwaysCreate" = "11:FALSE"
+                            "DeleteAtUninstall" = "11:FALSE"
+                            "Transitive" = "11:FALSE"
+                                "Keys"
+                                {
+                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_04010CA3CD654D2F9ADDCF46DF915527"
+                                    {
+                                    "Name" = "8:Send with Transfar"
+                                    "Condition" = "8:"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "DeleteAtUninstall" = "11:FALSE"
+                                    "Transitive" = "11:FALSE"
+                                        "Keys"
+                                        {
+                                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_05CDB13BA6A84D10B55B610D51245BB0"
+                                            {
+                                            "Name" = "8:command"
+                                            "Condition" = "8:"
+                                            "AlwaysCreate" = "11:FALSE"
+                                            "DeleteAtUninstall" = "11:FALSE"
+                                            "Transitive" = "11:FALSE"
+                                                "Keys"
+                                                {
+                                                }
+                                                "Values"
+                                                {
+                                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_CA9BB8DA779D4B2D8260B86D5A2B48FD"
+                                                    {
+                                                    "Name" = "8:"
                                                     "Condition" = "8:"
                                                     "Transitive" = "11:FALSE"
                                                     "ValueTypes" = "3:1"
