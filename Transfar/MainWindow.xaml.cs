@@ -1,19 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Transfar
 {
@@ -61,7 +50,7 @@ namespace Transfar
 
         private void ReportNewFile(TcpClient tcpClient)
         {
-            ReceivingFileWindow receivingFileWindow = new ReceivingFileWindow(tcpClient);
+            ReceivingFileWindow receivingFileWindow = new ReceivingFileWindow(client, tcpClient);
             receivingFileWindow.Show();
             receivingFileWindow.Activate();
         }
@@ -85,6 +74,8 @@ namespace Transfar
         {
             await Task.Run(async () => // async put so that the exception is thrown to the caller
             {
+                client.StartListening(); // adesso si inizia ad ascoltare realmente
+
                 while (true)
                 {
                     reportIndicator.Report(client.ListenRequests());

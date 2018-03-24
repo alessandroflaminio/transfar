@@ -1,19 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Transfar
 {
@@ -31,13 +20,14 @@ namespace Transfar
 
 
         // TODO: you should pass the client constructed in the MainWindow to the ReceivingFileWindow
-        public ReceivingFileWindow()
-        {
-            InitializeComponent();
-        }
+        //public ReceivingFileWindow()
+        //{
+        //    InitializeComponent();
+        //}
 
-        public ReceivingFileWindow(TcpClient tcpClient)
+        public ReceivingFileWindow(Client client, TcpClient tcpClient)
         {
+            this.client = client;
             this.tcpClient = tcpClient;
             fileTransferData = client.StartReceiving(tcpClient);
             originalLength = fileTransferData.Length;

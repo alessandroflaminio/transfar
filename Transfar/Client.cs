@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 
 namespace Transfar
 {
@@ -41,9 +38,6 @@ namespace Transfar
             udpClient = new UdpClient();
             announcementBytes = Encoding.ASCII.GetBytes(tfString + tcpPort);
             multicastEndpoint = new IPEndPoint(IPAddress.Parse(multicastAddress), udpPort);
-
-            tcpListener = new TcpListener(IPAddress.Any, tcpPort);
-            tcpListener.Start();
         }
 
         public void Dispose()
@@ -52,22 +46,14 @@ namespace Transfar
             tcpListener.Stop();
         }
 
-        //Funzione per ottenere tutti gli indirizzi IP assegnati al PC (non utilizzata).
-        public List<string> GetLocalIPAddress()
+        /*
+         * Funzione che avvia l'ascolto di eventuali connessioni da parte di un server che
+         * vorrebbe inviare un file.
+         */
+        public void StartListening()
         {
-            List<string> myIps = new List<string>();
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    myIps.Add(ip.ToString());
-                }
-
-            }
-            if (!myIps.Any())
-                throw new Exception("Local IP Address Not Found!");
-            else return myIps;
+            tcpListener = new TcpListener(IPAddress.Any, tcpPort);
+            tcpListener.Start();
         }
 
         /*
