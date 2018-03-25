@@ -64,6 +64,53 @@ namespace Transfar
             //    Console.WriteLine(x.ToString());
         }
 
+        public FileTransferData StartSending(string filePath, IPEndPoint selectedClient)
+        {
+            FileTransferData fileTransferData = new FileTransferData();
+
+            TcpClient tcpClient = new TcpClient();
+            tcpClient.Connect(selectedClient); //Mi connetto al relativo client (lancia un'eccezione se non disponibile)
+
+            FileInfo fi = new FileInfo(filePath); //Ottengo informazioni sul file specificato
+            fileTransferData.Name = fi.Name;
+            fileTransferData.Length = fi.Length;
+            Console.WriteLine("[SERVER] File length of the sent file: " + fileTransferData.Length);
+            Console.WriteLine("[SERVER] File name of the sent file: " + fileTransferData.Name);
+
+            fileTransferData.NetworkStream = tcpClient.GetStream();
+
+            byte[] fileNameLengthBuffer = BitConverter.GetBytes(Encoding.Unicode.GetByteCount(fileTransferData.Name));
+            fileTransferData.NetworkStream.Write(fileNameLengthBuffer, 0, fileNameLengthBuffer.Length);
+
+            byte[] fileLengthBuffer = BitConverter.GetBytes(fileTransferData.Length);
+            fileTransferData.NetworkStream.Write(fileLengthBuffer, 0, fileLengthBuffer.Length);
+
+            byte[] fileNameBuffer = Encoding.Unicode.GetBytes(fileTransferData.Name);
+            fileTransferData.NetworkStream.Write(fileNameBuffer, 0, fileNameBuffer.Length);
+
+            //using (FileStream fileStream = File.OpenRead(filePath))
+            //    fileStream.CopyTo(netStream);
+            
+            // TODO: zip a folder
+            fileTransferData.FileStream = File.OpenRead(filePath);
+
+            Console.WriteLine("[SERVER] Initial file data sent successfully");
+
+            return fileTransferData;
+        }
+
+        // To be in a while loop
+        public void Send(FileTransferData fileTransferData)
+        {
+            var buffer = new byte[256 * 1024];
+            int bytesRead;
+            if (((bytesRead = fileTransferData.FileStream.Read(buffer, 0, buffer.Length)) > 0) && (fileTransferData.Length > 0))
+            {
+                fileTransferData.NetworkStream.Write(buffer, 0, bytesRead);
+                fileTransferData.Length -= bytesRead;
+            }
+        }
+
         //Funzione che permette la scelta dell'host a cui inviare il file ed invia il file.
         public void SendFile(string fileNamePath)
         {

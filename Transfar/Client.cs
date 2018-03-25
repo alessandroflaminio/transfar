@@ -6,16 +6,6 @@ using System.Text;
 
 namespace Transfar
 {
-    public class FileTransferData
-    {
-        public string Name { get; set; }
-        public string Path { get; set; }
-        public long Length { get; set; }
-        public NetworkStream NetworkStream { get; set; }
-        public FileStream FileStream { get; set; }
-    }
-
-
     public class Client
     {
         private UdpClient udpClient;
@@ -52,8 +42,11 @@ namespace Transfar
          */
         public void StartListening()
         {
-            tcpListener = new TcpListener(IPAddress.Any, tcpPort);
-            tcpListener.Start();
+            if (tcpListener == null) // Singleton: must only be initialized once
+            {
+                tcpListener = new TcpListener(IPAddress.Any, tcpPort);
+                tcpListener.Start();
+            }
         }
 
         /*

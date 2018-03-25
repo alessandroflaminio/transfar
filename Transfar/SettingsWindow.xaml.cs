@@ -43,6 +43,7 @@ namespace Transfar
         public SettingsWindow(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
+            mainWindow.availabilityCheckbox.IsChecked = false;
             if (Properties.Settings.Default.Path != "")
             {
                 _directoryPath = Properties.Settings.Default.Path;

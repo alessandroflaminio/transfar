@@ -88,7 +88,7 @@ namespace Transfar
                         client.Receive(fileTransferData);
                         token.ThrowIfCancellationRequested();
 
-                        Thread.Sleep(500); // Waiting for testing purposes
+                        //Thread.Sleep(500); // Waiting for testing purposes
 
                         progressIndicator.Report(100 - ((float) fileTransferData.Length / originalLength * 100));
                     }
