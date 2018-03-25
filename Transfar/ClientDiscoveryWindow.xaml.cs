@@ -115,7 +115,8 @@ namespace Transfar
         private void sendButton_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine(clientsListBox.SelectedItem);
-            SendingFileWindow sendingFileWindow = new SendingFileWindow();
+
+            SendingFileWindow sendingFileWindow = new SendingFileWindow(server, (IPEndPoint) clientsListBox.SelectedItem);
             sendingFileWindow.Show();
             sendingFileWindow.Activate();
         }

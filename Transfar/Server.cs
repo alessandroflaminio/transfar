@@ -111,6 +111,19 @@ namespace Transfar
             }
         }
 
+        public void EndSending(FileTransferData fileTransferData)
+        {
+            fileTransferData.NetworkStream.Flush();
+            fileTransferData.NetworkStream.Dispose();
+            fileTransferData.FileStream.Dispose();
+        }
+
+        public void CancelSending(FileTransferData fileTransferData)
+        {
+            fileTransferData.NetworkStream.Dispose();
+            fileTransferData.FileStream.Dispose();
+        }
+
         //Funzione che permette la scelta dell'host a cui inviare il file ed invia il file.
         public void SendFile(string fileNamePath)
         {

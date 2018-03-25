@@ -24,6 +24,10 @@ namespace Transfar
         public Client()
         {
             path = Properties.Settings.Default.Path;
+            if (path == "") // That's the case of the default path which is encoded in the .config file as an empty string
+            {
+                path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads\\Transfar";
+            }
 
             udpClient = new UdpClient();
             announcementBytes = Encoding.ASCII.GetBytes(tfString + tcpPort);

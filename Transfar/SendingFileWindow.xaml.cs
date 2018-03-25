@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -10,14 +11,19 @@ namespace Transfar
     /// </summary>
     public partial class SendingFileWindow : Window
     {
+        // TODO: you should check what happens when a transfer is cancelled to the other party
+        private Server server;
+        private IPEndPoint selectedClient;
+        private long originalLength;
         private FileTransferData fileTransferData;
 
         private CancellationTokenSource cts;
 
 
-        // TODO to process here the startsending
-        public SendingFileWindow()
+        public SendingFileWindow(Server server, IPEndPoint selectedClient)
         {
+            this.server = server;
+            this.selectedClient = selectedClient;
             InitializeComponent();
         }
 
@@ -26,7 +32,12 @@ namespace Transfar
             cts.Cancel();
         }
 
-        private void filePickerButton_Click(object sender, RoutedEventArgs e)
+        private void ReportProgress(double value)
+        {
+            progressBar.Value = value;
+        }
+
+        private async void filePickerButton_Click(object sender, RoutedEventArgs e)
         {
             FolderBrowser fb = new FolderBrowser();
             fb.Description = "Please select a file or folder below:";
@@ -44,9 +55,12 @@ namespace Transfar
                 cts = new CancellationTokenSource();
                 var progressIndicator = new Progress<double>(ReportProgress);
 
+                fileTransferData = server.StartSending(filePath, selectedClient);
+                originalLength = fileTransferData.Length;
+
                 try
                 {
-                    await ReceiveFileAsync(progressIndicator, cts.Token);
+                    await SendFileAsync(progressIndicator, cts.Token);
                 }
                 catch (Exception)
                 {
@@ -68,7 +82,7 @@ namespace Transfar
 
                     while (fileTransferData.Length > 0)
                     {
-                        client.Receive(fileTransferData);
+                        server.Send(fileTransferData);
                         token.ThrowIfCancellationRequested();
 
                         //Thread.Sleep(500); // Waiting for testing purposes
@@ -76,11 +90,11 @@ namespace Transfar
                         progressIndicator.Report(100 - ((float)fileTransferData.Length / originalLength * 100));
                     }
 
-                    client.EndReceiving(fileTransferData);
+                    server.EndSending(fileTransferData);
                 }
                 catch (OperationCanceledException)
                 {
-                    client.CancelReceiving(fileTransferData);
+                    server.CancelSending(fileTransferData);
                     throw;
                 }
             }, token);

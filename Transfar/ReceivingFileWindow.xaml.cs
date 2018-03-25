@@ -11,6 +11,7 @@ namespace Transfar
     /// </summary>
     public partial class ReceivingFileWindow : Window
     {
+        // TODO: you should check what happens when a transfer is cancelled to the other party
         private Client client;
         private TcpClient tcpClient;
         private long originalLength;
@@ -18,12 +19,6 @@ namespace Transfar
 
         private CancellationTokenSource cts;
 
-
-        // TODO: you should pass the client constructed in the MainWindow to the ReceivingFileWindow
-        //public ReceivingFileWindow()
-        //{
-        //    InitializeComponent();
-        //}
 
         public ReceivingFileWindow(Client client, TcpClient tcpClient)
         {
