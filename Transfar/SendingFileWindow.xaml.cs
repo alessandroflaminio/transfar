@@ -14,17 +14,21 @@ namespace Transfar
         // TODO: you should check what happens when a transfer is cancelled to the other party
         private Server server;
         private IPEndPoint selectedClient;
+        private string filePath;
         private long originalLength;
         private FileTransferData fileTransferData;
 
         private CancellationTokenSource cts;
 
 
-        public SendingFileWindow(Server server, IPEndPoint selectedClient)
+        public SendingFileWindow(Server server, IPEndPoint selectedClient, string filePath)
         {
+            this.filePath = filePath;
             this.server = server;
             this.selectedClient = selectedClient;
             InitializeComponent();
+
+            StartSending();
         }
 
         private void Cancel_Button_Click(object sender, RoutedEventArgs e)
@@ -37,38 +41,24 @@ namespace Transfar
             progressBar.Value = value;
         }
 
-        private async void filePickerButton_Click(object sender, RoutedEventArgs e)
+        private async void StartSending()
         {
-            FolderBrowser fb = new FolderBrowser();
-            fb.Description = "Please select a file or folder below:";
-            fb.IncludeFiles = true;
-            //fb.InitialDirectory = @"C:\";
-            if (fb.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            cts = new CancellationTokenSource();
+            var progressIndicator = new Progress<double>(ReportProgress);
+
+            fileTransferData = server.StartSending(filePath, selectedClient);
+            originalLength = fileTransferData.Length;
+
+            try
             {
-                string filePath = fb.SelectedPath;
-                Console.WriteLine("Selected path:" + filePath);
-
-                filePickerButton.Visibility = Visibility.Hidden;
-                progressBar.Visibility = Visibility.Visible;
-                cancelButton.Visibility = Visibility.Visible;
-
-                cts = new CancellationTokenSource();
-                var progressIndicator = new Progress<double>(ReportProgress);
-
-                fileTransferData = server.StartSending(filePath, selectedClient);
-                originalLength = fileTransferData.Length;
-
-                try
-                {
-                    await SendFileAsync(progressIndicator, cts.Token);
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Cancellation requested!");
-                }
-
-                this.Close();
+                await SendFileAsync(progressIndicator, cts.Token);
             }
+            catch (Exception)
+            {
+                Console.WriteLine("Cancellation requested!");
+            }
+            
+            this.Close();
         }
 
 

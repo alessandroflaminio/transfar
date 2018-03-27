@@ -116,9 +116,9 @@ namespace Transfar
         {
             Console.WriteLine(clientsListBox.SelectedItem);
 
-            SendingFileWindow sendingFileWindow = new SendingFileWindow(server, (IPEndPoint) clientsListBox.SelectedItem);
-            sendingFileWindow.Show();
-            sendingFileWindow.Activate();
+            SelectFileWindow selectFileWindow = new SelectFileWindow(server, (IPEndPoint) clientsListBox.SelectedItem);
+            selectFileWindow.Show();
+            selectFileWindow.Activate();
         }
     }
 }

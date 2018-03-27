@@ -5,11 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Transfar"
         mc:Ignorable="d"
-        Title="SendingFileWindow" Height="242.415" Width="440.558">
-    <Grid Margin="0,0,2,-21">
-        <Button x:Name="filePickerButton" Content="Select file or folder" HorizontalAlignment="Left" Margin="151,34,0,0" VerticalAlignment="Top" Width="118" Click="filePickerButton_Click"/>
-        <ProgressBar x:Name="progressBar" Height="31" Margin="10,109,10,0" VerticalAlignment="Top" Visibility="Hidden"/>
-        <Button x:Name="cancelButton" Content="Cancel transfer" Margin="96,198,96,0" VerticalAlignment="Top" Click="Cancel_Button_Click" Visibility="Hidden"/>
+        Title="SendingFileWindow" Height="450" Width="800">
+    <Grid>
+        <ProgressBar x:Name="progressBar" Height="31" Margin="10,109,10,0" VerticalAlignment="Top"/>
+        <Button x:Name="cancelButton" Content="Cancel transfer" Margin="96,198,96,0" VerticalAlignment="Top" Click="Cancel_Button_Click"/>
         <TextBlock x:Name="fileInfo" HorizontalAlignment="Left" Margin="30,145,0,0" TextWrapping="Wrap" Text="Sending file FILE_NAME to CLIENT_NAME..." VerticalAlignment="Top" Height="32" Width="235"/>
     </Grid>
 </Window>
