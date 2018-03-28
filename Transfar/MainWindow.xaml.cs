@@ -18,10 +18,10 @@ namespace Transfar
         public MainWindow()
         {
             CheckInstance();
-
             client = new Client();
             
             InitializeComponent();
+
 
             // TODO: for testing purposes
             try
@@ -44,7 +44,7 @@ namespace Transfar
             // If Transfar is already running
             if (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
             {
-                IPC.Client(Environment.GetCommandLineArgs()); // Sends the data to the already running instance
+                IPCClient.Client(Environment.GetCommandLineArgs()); // Sends the data to the already running instance
                 Application.Current.Shutdown(); // Exits the current process
             }
             else
@@ -53,10 +53,27 @@ namespace Transfar
             }
         }
 
-        private async void ListenInstancesAsync() => await Task.Run(async () => // async put so that the exception is thrown to the caller
+        private async void ListenInstancesAsync()
         {
-            IPC.Server();
-        });
+            await Task.Run(async () => // async put so that the exception is thrown to the caller
+            {
+                do
+                {
+                    IPCServer ipcServer = new IPCServer();
+                    ipcServer.Server(); // The thread blocks here until an IPC Client connects to the server
+                    // TODO: you should check that the received params are valid
+                    // Operations pertaining the UI
+                    await Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                     {
+                         //this.Hide(); // Hide the MainWindow
+                         ClientDiscoveryWindow clientDiscoveryWindow = new ClientDiscoveryWindow();
+                         clientDiscoveryWindow.Show();
+                     }));
+
+                } while (true);
+            });
+
+        }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {

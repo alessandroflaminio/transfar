@@ -94,7 +94,8 @@
     <Compile Include="Client.cs" />
     <Compile Include="FileTransferData.cs" />
     <Compile Include="FolderBrowser.cs" />
-    <Compile Include="IPC.cs" />
+    <Compile Include="IPCClient.cs" />
+    <Compile Include="IPCServer.cs" />
     <Compile Include="ReceivingFileWindow.xaml.cs">
       <DependentUpon>ReceivingFileWindow.xaml</DependentUpon>
     </Compile>
