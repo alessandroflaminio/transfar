@@ -127,8 +127,11 @@ namespace Transfar
             using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
             {
                 System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-                DirectoryPath = dialog.SelectedPath;
-                System.Console.WriteLine(dialog.SelectedPath);
+                if (dialog.SelectedPath != "")
+                {
+                    DirectoryPath = dialog.SelectedPath;
+                }
+                Console.WriteLine(dialog.SelectedPath);
             }
         }
 

@@ -94,6 +94,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6.1"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.6.1 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6.1"
+                    }
+                }
             }
         }
     }
@@ -212,7 +220,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Transfar"
         "ProductCode" = "8:{42856D87-1F43-4046-A854-501F1C322A46}"
-        "PackageCode" = "8:{0B1FA958-B2DA-495C-929B-42A30D749CE2}"
+        "PackageCode" = "8:{4831D6E6-D54E-45E0-93F6-173FAC310F81}"
         "UpgradeCode" = "8:{B1469D7A-9A76-4305-9CC2-3A56E864C53E}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -357,7 +365,7 @@
                                                     "Condition" = "8:"
                                                     "Transitive" = "11:FALSE"
                                                     "ValueTypes" = "3:1"
-                                                    "Value" = "8:C:\\\\Program Files\\\\Transfar\\\\Transfar\\\\Transfar.exe"
+                                                    "Value" = "8:C:\\Program Files (x86)\\Transfar\\Transfar\\Transfar.exe %1 provolone"
                                                     }
                                                 }
                                             }
@@ -421,7 +429,7 @@
                                                     "Condition" = "8:"
                                                     "Transitive" = "11:FALSE"
                                                     "ValueTypes" = "3:1"
-                                                    "Value" = "8:C:\\\\Program Files\\\\Transfar\\\\Transfar\\\\Transfar.exe"
+                                                    "Value" = "8:C:\\Program Files (x86)\\Transfar\\Transfar\\Transfar.exe %1 provolone"
                                                     }
                                                 }
                                             }
@@ -485,7 +493,7 @@
                                                     "Condition" = "8:"
                                                     "Transitive" = "11:FALSE"
                                                     "ValueTypes" = "3:1"
-                                                    "Value" = "8:C:\\\\Program Files\\\\Transfar\\\\Transfar\\\\Transfar.exe"
+                                                    "Value" = "8:C:\\Program Files (x86)\\Transfar\\Transfar\\Transfar.exe %1 provolone"
                                                     }
                                                 }
                                             }

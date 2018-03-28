@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,11 +17,46 @@ namespace Transfar
 
         public MainWindow()
         {
+            CheckInstance();
+
             client = new Client();
+            
             InitializeComponent();
+
+            // TODO: for testing purposes
+            try
+            {
+                testLabel.Content = Environment.GetCommandLineArgs().GetValue(1) ?? "";
+                testLabel2.Content = Environment.GetCommandLineArgs().GetValue(2) ?? "";
+            }
+            catch (Exception)
+            {
+                
+            }
+
+            System.Windows.Forms.NotifyIcon ni = new System.Windows.Forms.NotifyIcon();
+            ni.Icon = new System.Drawing.Icon("C:\\Users\\Alessandro\\source\\repos\\Transfar\\Transfar\\Icon.ico");
+            ni.Visible = true;
         }
 
-        // devo fare in modo che quando premo la checkbox entrambe le operazioni asincrone vengano avviate ed aspettate (WaitAll)
+        private void CheckInstance()
+        {
+            // If Transfar is already running
+            if (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
+            {
+                IPC.Client(Environment.GetCommandLineArgs()); // Sends the data to the already running instance
+                Application.Current.Shutdown(); // Exits the current process
+            }
+            else
+            {
+                ListenInstancesAsync();
+            }
+        }
+
+        private async void ListenInstancesAsync() => await Task.Run(async () => // async put so that the exception is thrown to the caller
+        {
+            IPC.Server();
+        });
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {

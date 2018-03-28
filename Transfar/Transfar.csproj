@@ -71,6 +71,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -93,6 +94,7 @@
     <Compile Include="Client.cs" />
     <Compile Include="FileTransferData.cs" />
     <Compile Include="FolderBrowser.cs" />
+    <Compile Include="IPC.cs" />
     <Compile Include="ReceivingFileWindow.xaml.cs">
       <DependentUpon>ReceivingFileWindow.xaml</DependentUpon>
     </Compile>
@@ -185,6 +187,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
