@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,14 +22,29 @@ namespace Transfar
     /// </summary>
     public partial class ClientDiscoveryWindow : Window
     {
+        // TODO: Each time a new ClientDiscoveryWindow opens a new server is created, manage that kind of exception
         private Server server;
         private CancellationTokenSource cts;
-
+        private string filePath;
 
         public ClientDiscoveryWindow()
         {
             server = new Server();
+
             InitializeComponent();
+        }
+
+        public ClientDiscoveryWindow(string filePath) // Constructor when you don't need to open the file picker
+        {
+            this.filePath = filePath;
+
+            server = new Server();
+
+            InitializeComponent();
+
+            sendButton.Content = "Send file";
+            sendButton.Click -= sendButton_Click;
+            sendButton.Click += sendButtonContextual_Click;
         }
 
         private async void startButton_Click(object sender, RoutedEventArgs e)
@@ -119,6 +135,15 @@ namespace Transfar
             SelectFileWindow selectFileWindow = new SelectFileWindow(server, (IPEndPoint) clientsListBox.SelectedItem);
             selectFileWindow.Show();
             selectFileWindow.Activate();
+        }
+
+        private void sendButtonContextual_Click(object sender, RoutedEventArgs e)
+        {
+            SendingFileWindow sendingFileWindow = new SendingFileWindow(server, (IPEndPoint) clientsListBox.SelectedItem, filePath);
+            sendingFileWindow.Show();
+            sendingFileWindow.Activate();
+
+            this.Close();
         }
     }
 }

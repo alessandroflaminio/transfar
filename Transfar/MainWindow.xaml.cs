@@ -26,8 +26,8 @@ namespace Transfar
             // TODO: for testing purposes
             try
             {
-                testLabel.Content = Environment.GetCommandLineArgs().GetValue(1) ?? "";
-                testLabel2.Content = Environment.GetCommandLineArgs().GetValue(2) ?? "";
+                testLabel.Content = Environment.GetCommandLineArgs().GetValue(0) ?? "";
+                testLabel2.Content = Environment.GetCommandLineArgs().GetValue(1) ?? ""; // filepath!!!
             }
             catch (Exception)
             {
@@ -44,7 +44,7 @@ namespace Transfar
             // If Transfar is already running
             if (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
             {
-                IPCClient.Client(Environment.GetCommandLineArgs()); // Sends the data to the already running instance
+                IPCClient.Client((string) Environment.GetCommandLineArgs().GetValue(1)); // Sends the data to the already running instance
                 Application.Current.Shutdown(); // Exits the current process
             }
             else
@@ -60,14 +60,22 @@ namespace Transfar
                 do
                 {
                     IPCServer ipcServer = new IPCServer();
-                    ipcServer.Server(); // The thread blocks here until an IPC Client connects to the server
+                    string filePath = ipcServer.Server(); // The thread blocks here until an IPC Client connects to the server
                     // TODO: you should check that the received params are valid
                     // Operations pertaining the UI
                     await Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                      {
                          //this.Hide(); // Hide the MainWindow
-                         ClientDiscoveryWindow clientDiscoveryWindow = new ClientDiscoveryWindow();
-                         clientDiscoveryWindow.Show();
+                         try
+                         {
+                             ClientDiscoveryWindow clientDiscoveryWindow = new ClientDiscoveryWindow(filePath); // Passing the path
+                             clientDiscoveryWindow.Show();
+                         }
+                         catch (SocketException) // That means that I'm trying to open 2 ClientDiscoveryWindow (two servers)
+                         {
+                             MessageBox.Show("To start sending another file, close the open Transfar Windows.", "Transfar", MessageBoxButton.OK,
+                                 MessageBoxImage.Warning, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+                         }
                      }));
 
                 } while (true);

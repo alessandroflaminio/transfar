@@ -10,13 +10,13 @@ namespace Transfar
 {
     class IPCClient
     {
-        public static void Client(string[] args)
+        public static void Client(string arg)
         {
             var client = new NamedPipeClientStream("TransfarContextualMenuHandler");
             client.Connect();
             StreamWriter writer = new StreamWriter(client);
 
-            args.ToList().ForEach(writer.WriteLine); // Every string is sent individually
+            writer.WriteLine(arg); // Every string is sent individually
             writer.Flush();
         }
     }

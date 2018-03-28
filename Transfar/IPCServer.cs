@@ -22,23 +22,21 @@ namespace Transfar
         }
 
         // This function must be executed by the first instance of Transfar
-        public List<String> Server()
+        public string Server()
         {
-            List<String> args = new List<String>();
             server.WaitForConnection();
             StreamReader reader = new StreamReader(server);
 
-            int i = 0;
-            do
-            {
-                String received = reader.ReadLine();
-                args.Add(received);
-                Console.WriteLine("[SERVER] Received IPC string: " + args.Last());
-            } while (i++ < 3);//String.IsNullOrWhiteSpace(args.Last()));
+            //int i = 0;
+            //do // read only one line
+            //{
+                string received = reader.ReadLine();
+                Console.WriteLine("[SERVER] Received IPC string: " + received);
+            //} while (i++ < 3);//String.IsNullOrWhiteSpace(args.Last()));
 
 
             server.Close();
-            return args;
+            return received;
         }
     }
 }
