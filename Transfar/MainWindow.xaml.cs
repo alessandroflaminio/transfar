@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
@@ -14,29 +15,38 @@ namespace Transfar
     {
         private Client client;
         private CancellationTokenSource cts;
+        private System.Windows.Forms.NotifyIcon ni;
 
         public MainWindow()
         {
             CheckInstance();
             client = new Client();
-            
+            ConfigureTrayIcon();
+
             InitializeComponent();
+        }
 
-
-            // TODO: for testing purposes
-            try
-            {
-                testLabel.Content = Environment.GetCommandLineArgs().GetValue(0) ?? "";
-                testLabel2.Content = Environment.GetCommandLineArgs().GetValue(1) ?? ""; // filepath!!!
-            }
-            catch (Exception)
-            {
-                
-            }
-
-            System.Windows.Forms.NotifyIcon ni = new System.Windows.Forms.NotifyIcon();
+        private void ConfigureTrayIcon()
+        {
+            ni = new System.Windows.Forms.NotifyIcon();
             ni.Icon = new System.Drawing.Icon("C:\\Users\\Alessandro\\source\\repos\\Transfar\\Transfar\\Icon.ico");
             ni.Visible = true;
+            ni.Click += ShowTransfarClick;
+            ni.ContextMenu = new System.Windows.Forms.ContextMenu();
+            ni.ContextMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("Exit Transfar", ExitTransfarClick));
+        }
+
+        private void ExitTransfarClick(object sender, EventArgs e) => Application.Current.Shutdown();
+
+        private void ShowTransfarClick(object sender, EventArgs e) => this.Show();
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            e.Cancel = true; // setting cancel to true will cancel the close request so the application is not closed
+
+            this.Hide();
+
+            base.OnClosing(e);
         }
 
         private void CheckInstance()
@@ -44,12 +54,28 @@ namespace Transfar
             // If Transfar is already running
             if (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
             {
-                IPCClient.Client((string) Environment.GetCommandLineArgs().GetValue(1)); // Sends the data to the already running instance
+                string[] args = Environment.GetCommandLineArgs();
+                if (args.Count() > 1) // If launched from contextual menu
+                {
+                    IPCClient.Client(args[1]); // Sends the data to the already running instance
+                }
+                else // If launched from .exe
+                {
+                    MessageBox.Show("Transfar is already running.", "Transfar", MessageBoxButton.OK,
+                        MessageBoxImage.Warning, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+                }
                 Application.Current.Shutdown(); // Exits the current process
             }
-            else
+            else // If there isn't a running instance of Transfar
             {
-                ListenInstancesAsync();
+                string[] args = Environment.GetCommandLineArgs();
+                if (args.Count() > 1) // If launched from contextual menu
+                {
+                    ClientDiscoveryWindow clientDiscoveryWindow = new ClientDiscoveryWindow(args[1]); // Passing the path (second argument)
+                    clientDiscoveryWindow.Show();
+                }
+
+                ListenInstancesAsync(); // Listens for other instances of Transfar launched
             }
         }
 
@@ -96,11 +122,15 @@ namespace Transfar
 
             try
             {
-                await Task.WhenAll(AnnounceAsync(cts.Token), ListenRequestsAsync(reportIndicator, cts.Token));
+                await Task.WhenAll(AnnounceAsync(cts.Token), ListenRequestsAsync(reportIndicator));
             }
-            catch (Exception)
+            //catch (OperationCanceledException)
+            //{
+            //    Console.WriteLine("Cancellation requested!");
+            //}
+            catch (SocketException)
             {
-                Console.WriteLine("Cancellation requested!");
+                Console.WriteLine("The AcceptTcpClient was effectively blocked");
             }
         }
 
@@ -126,12 +156,16 @@ namespace Transfar
 
                     Thread.Sleep(1000);
 
+                    if (token.IsCancellationRequested)
+                    {
+                        client.StopListening(); // If I don't want to be available, stop listening for connections
+                    }
                     token.ThrowIfCancellationRequested();
                 }
             }, token);
         }
 
-        private async Task ListenRequestsAsync(IProgress<TcpClient> reportIndicator, CancellationToken token)
+        private async Task ListenRequestsAsync(IProgress<TcpClient> reportIndicator)
         {
             await Task.Run(async () => // async put so that the exception is thrown to the caller
             {
@@ -140,10 +174,8 @@ namespace Transfar
                 while (true)
                 {
                     reportIndicator.Report(client.ListenRequests());
-
-                    token.ThrowIfCancellationRequested();
                 }
-            }, token);
+            });
         }
 
         private void Settings_Button_Click(object sender, RoutedEventArgs e)
@@ -152,11 +184,6 @@ namespace Transfar
             settingsWindow.Show();
             settingsWindow.Activate();
             this.Hide();
-            //using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
-            //{
-            //    System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-            //    System.Console.WriteLine(dialog.SelectedPath);
-            //}
         }
     }
 }

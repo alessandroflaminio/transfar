@@ -49,7 +49,19 @@ namespace Transfar
             if (tcpListener == null) // Singleton: must only be initialized once
             {
                 tcpListener = new TcpListener(IPAddress.Any, tcpPort);
-                tcpListener.Start();
+            }
+
+            tcpListener.Start();
+        }
+
+        /*
+         * Funzione per stoppare la ricezione
+         */
+        public void StopListening()
+        {
+            if (tcpListener != null)
+            {
+                tcpListener.Stop();
             }
         }
 

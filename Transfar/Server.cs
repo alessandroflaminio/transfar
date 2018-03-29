@@ -72,7 +72,7 @@ namespace Transfar
             TcpClient tcpClient = new TcpClient();
             tcpClient.Connect(selectedClient); //Mi connetto al relativo client (lancia un'eccezione se non disponibile)
 
-            if (Directory.Exists(filePath))
+            if (Directory.Exists(filePath)) // TODO: (if folder) zip folder into a temp directory, than substitute the path into fileTransferData
             {
                 string tempPath = Path.GetTempPath() + new DirectoryInfo(filePath).Name + ".zip";
                 ZipFile.CreateFromDirectory(filePath, tempPath);
@@ -98,7 +98,6 @@ namespace Transfar
             //using (FileStream fileStream = File.OpenRead(filePath))
             //    fileStream.CopyTo(netStream);
             
-            // TODO: (if folder) zip folder into a temp directory, than substitute the path into fileTransferData
             fileTransferData.FileStream = File.OpenRead(filePath);
 
             Console.WriteLine("[SERVER] Initial file data sent successfully");

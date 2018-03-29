@@ -26,7 +26,7 @@ namespace Transfar
             InitializeComponent();
         }
 
-        private async void filePickerButton_Click(object sender, RoutedEventArgs e)
+        private void filePickerButton_Click(object sender, RoutedEventArgs e)
         {
             FolderBrowser fb = new FolderBrowser();
             fb.Description = "Please select a file or folder below:";
@@ -38,8 +38,6 @@ namespace Transfar
                 Console.WriteLine("Selected path:" + filePath);
 
                 SendingFileWindow sendingFileWindow = new SendingFileWindow(server, selectedClient, filePath);
-                sendingFileWindow.Show();
-                sendingFileWindow.Activate();
 
                 this.Close();
             }

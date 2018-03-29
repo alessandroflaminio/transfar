@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -46,8 +47,22 @@ namespace Transfar
             cts = new CancellationTokenSource();
             var progressIndicator = new Progress<double>(ReportProgress);
 
-            fileTransferData = server.StartSending(filePath, selectedClient);
+            try
+            {
+                fileTransferData = server.StartSending(filePath, selectedClient);
+            }
+            catch (SocketException)
+            {
+                MessageBox.Show("The selected host is unavailable.", "Transfar", MessageBoxButton.OK,
+                    MessageBoxImage.Stop, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+                this.Close();
+                return;
+            }
             originalLength = fileTransferData.Length;
+
+            // If there are no issues with the transfer I can show the window
+            this.Show();
+            this.Activate();
 
             try
             {

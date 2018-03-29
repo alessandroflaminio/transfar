@@ -13,8 +13,5 @@
         <Button x:Name="settingsButton" Margin="0,25,25,0" VerticalAlignment="Top" Click="Settings_Button_Click" Height="45" HorizontalAlignment="Right" Width="45">
             <Image Height="36" Source="appbar.settings.png" Stretch="Uniform" Width="36"/>
         </Button>
-        <Label x:Name="testLabel" Content="Label" HorizontalAlignment="Left" Margin="49,190,0,0" VerticalAlignment="Top" Width="404"/>
-        <Label x:Name="testLabel2" Content="Label" HorizontalAlignment="Left" Margin="49,221,0,0" VerticalAlignment="Top" Width="404"/>
-
     </Grid>
 </Window>
