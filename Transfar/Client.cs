@@ -163,7 +163,7 @@ namespace Transfar
             fileTransferData.Path = path + "//" + fileName;
             fileTransferData.Length = fileLength;
             fileTransferData.NetworkStream = netStream;
-            fileTransferData.FileStream = File.Create(fileTransferData.Path);
+            fileTransferData.FileStream = null; //  File.Create(fileTransferData.Path); that's because the management is done on the GUI
             return fileTransferData;
         }
 

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +27,6 @@ namespace Transfar
             this.client = client;
             this.tcpClient = tcpClient;
             fileTransferData = client.StartReceiving(tcpClient);
-            originalLength = fileTransferData.Length;
 
             InitializeComponent();
             fileInfo.Text = fileInfo.Text.Replace("CLIENT_NAME", tcpClient.Client.RemoteEndPoint.ToString()).Replace("FILE_NAME", fileTransferData.Name);
@@ -33,6 +34,24 @@ namespace Transfar
 
         private async void Yes_Button_Click(object sender, RoutedEventArgs e)
         {
+            if (File.Exists(fileTransferData.Path) && !Properties.Settings.Default.AutoReplace) // if autoreplace is disabled
+            {
+                if (MessageBox.Show(fileTransferData.Name + " already exists. Do you want to replace it?", "Transfar",
+                    MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                { // no substitution
+                    string appendedTimestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+                    string oldName = fileTransferData.Name;
+                    string oldNameWithoutExtension = Path.GetFileNameWithoutExtension(oldName);
+                    fileTransferData.Name = oldName.Replace(oldNameWithoutExtension, oldNameWithoutExtension + appendedTimestamp);
+                    fileTransferData.Path = fileTransferData.Path.Replace(oldName, fileTransferData.Name);
+
+                    Debug.WriteLine("Name: " + fileTransferData.Name + " Path: " + fileTransferData.Path);
+                }
+            }
+
+            fileTransferData.FileStream = File.Create(fileTransferData.Path);
+            originalLength = fileTransferData.Length;
+
             progressBar.Visibility = Visibility.Visible;
             cancelButton.Visibility = Visibility.Visible;
             yesButton.Visibility = Visibility.Hidden;
@@ -83,7 +102,7 @@ namespace Transfar
                         client.Receive(fileTransferData);
                         token.ThrowIfCancellationRequested();
 
-                        Thread.Sleep(500); // TODO: Waiting for testing purposes
+                        //Thread.Sleep(500); // TODO: Waiting for testing purposes
 
                         progressIndicator.Report(100 - ((float) fileTransferData.Length / originalLength * 100));
                     }
