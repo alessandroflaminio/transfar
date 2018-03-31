@@ -16,7 +16,7 @@ namespace Transfar
 
         private const string tfString = "Transfar";
         private const int udpPort = 51000;
-        private List<NamedIPEndPoint> availableClients; // TODO: NON E' RESETTATA QUANDO PREMO STOP E START NELLA CLIENTDISCOVERYWINDOW
+        private List<NamedIPEndPoint> availableClients;
 
         public Server()
         {
@@ -30,6 +30,7 @@ namespace Transfar
 
         public void ResetAvailableClients()
         {
+            // This is done so that if I restart the search the list is reset
             availableClients.Clear();
         }
 
@@ -81,7 +82,7 @@ namespace Transfar
             TcpClient tcpClient = new TcpClient();
             tcpClient.Connect(selectedClient); //Mi connetto al relativo client (lancia un'eccezione se non disponibile)
 
-            if (Directory.Exists(filePath)) // TODO: (if folder) zip folder into a temp directory, than substitute the path into fileTransferData
+            if (Directory.Exists(filePath))
             {
                 string tempPath = Path.GetTempPath() + new DirectoryInfo(filePath).Name + ".zip";
                 if(File.Exists(tempPath)) // check if the file already exists so that ZipFile doesn't throw an exception

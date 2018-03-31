@@ -12,7 +12,6 @@ namespace Transfar
     /// </summary>
     public partial class ClientDiscoveryWindow : Window
     {
-        // TODO: Each time a new ClientDiscoveryWindow opens a new server is created, manage that kind of exception
         private Server server;
         private CancellationTokenSource cts;
         private string filePath;

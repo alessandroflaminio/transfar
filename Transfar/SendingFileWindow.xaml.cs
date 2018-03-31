@@ -12,7 +12,7 @@ namespace Transfar
     /// </summary>
     public partial class SendingFileWindow : Window
     {
-        // TODO: you should check what happens when a transfer is cancelled to the other party
+        // TODO: you should change the textinfo in the window
         private Server server;
         private IPEndPoint selectedClient;
         private string filePath;

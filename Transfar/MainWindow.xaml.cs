@@ -21,7 +21,7 @@ namespace Transfar
 
         public MainWindow()
         {
-            CheckInstance(); // HACK: Temp disabled
+            CheckInstance();
             client = new Client();
             ConfigureTrayIcon();
 

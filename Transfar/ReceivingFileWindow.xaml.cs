@@ -13,7 +13,6 @@ namespace Transfar
     /// </summary>
     public partial class ReceivingFileWindow : Window
     {
-        // TODO: you should check what happens when a transfer is cancelled to the other party
         private Client client;
         private TcpClient tcpClient;
         private long originalLength;
