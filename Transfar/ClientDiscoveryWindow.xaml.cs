@@ -1,19 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Transfar
 {
@@ -29,15 +19,15 @@ namespace Transfar
 
         public ClientDiscoveryWindow()
         {
-            server = new Server();
+                server = new Server();
 
-            InitializeComponent();
+                InitializeComponent();
         }
 
         public ClientDiscoveryWindow(string filePath) // Constructor when you don't need to open the file picker
         {
             this.filePath = filePath;
-
+            
             server = new Server();
 
             InitializeComponent();
@@ -55,7 +45,7 @@ namespace Transfar
 
             cts = new CancellationTokenSource();
             var progressIndicator = new Progress<int>(ReportProgress);
-            var reportIndicator = new Progress<IPEndPoint>(ReportAddition);
+            var reportIndicator = new Progress<NamedIPEndPoint>(ReportAddition);
 
             clientsListBox.Items.Clear();
 
@@ -85,6 +75,7 @@ namespace Transfar
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            stopButton_Click(this, new RoutedEventArgs()); // HACK: to dispose the processes that are executing
             server.Dispose();
         }
 
@@ -93,13 +84,13 @@ namespace Transfar
             progressBar.Value = value; // Attualmente il primo progresso è 0, controllare come viene assegnato il Report nella Async
         }
 
-        private void ReportAddition(IPEndPoint client)
+        private void ReportAddition(NamedIPEndPoint client)
         {
             if (client != null && !clientsListBox.Items.Contains(client))
                 clientsListBox.Items.Add(client);
         }
 
-        private async Task ClientDiscoveryAsync(IProgress<IPEndPoint> reportIndicator, IProgress<int> progressIndicator, CancellationToken token)
+        private async Task ClientDiscoveryAsync(IProgress<NamedIPEndPoint> reportIndicator, IProgress<int> progressIndicator, CancellationToken token)
         {
             await Task.Run(async () => // async put so that the exception is thrown to the caller
             {
@@ -132,14 +123,15 @@ namespace Transfar
         {
             Console.WriteLine(clientsListBox.SelectedItem);
 
-            SelectFileWindow selectFileWindow = new SelectFileWindow(server, (IPEndPoint) clientsListBox.SelectedItem);
+            SelectFileWindow selectFileWindow = new SelectFileWindow(server, ((NamedIPEndPoint) clientsListBox.SelectedItem).EndPoint);
             selectFileWindow.Show();
             selectFileWindow.Activate();
         }
 
         private void sendButtonContextual_Click(object sender, RoutedEventArgs e)
         {
-            SendingFileWindow sendingFileWindow = new SendingFileWindow(server, (IPEndPoint) clientsListBox.SelectedItem, filePath);
+            SendingFileWindow sendingFileWindow = new SendingFileWindow(server, ((NamedIPEndPoint)clientsListBox.SelectedItem).EndPoint,
+                filePath);
             sendingFileWindow.Show();
             sendingFileWindow.Activate();
 

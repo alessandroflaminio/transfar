@@ -29,7 +29,7 @@ namespace Transfar
             fileTransferData = client.StartReceiving(tcpClient);
 
             InitializeComponent();
-            fileInfo.Text = fileInfo.Text.Replace("CLIENT_NAME", tcpClient.Client.RemoteEndPoint.ToString()).Replace("FILE_NAME", fileTransferData.Name);
+            fileInfo.Text = fileInfo.Text.Replace("CLIENT_NAME", fileTransferData.HostName).Replace("FILE_NAME", fileTransferData.Name);
         }
 
         private async void Yes_Button_Click(object sender, RoutedEventArgs e)
@@ -102,7 +102,7 @@ namespace Transfar
                         client.Receive(fileTransferData);
                         token.ThrowIfCancellationRequested();
 
-                        //Thread.Sleep(500); // TODO: Waiting for testing purposes
+                        Thread.Sleep(500); // TODO: Waiting for testing purposes
 
                         progressIndicator.Report(100 - ((float) fileTransferData.Length / originalLength * 100));
                     }

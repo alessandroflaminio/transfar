@@ -17,6 +17,8 @@ namespace Transfar
         private CancellationTokenSource cts;
         private System.Windows.Forms.NotifyIcon ni;
 
+        private ClientDiscoveryWindow cdw;
+
         public MainWindow()
         {
             CheckInstance();
@@ -71,8 +73,7 @@ namespace Transfar
                 string[] args = Environment.GetCommandLineArgs();
                 if (args.Count() > 1) // If launched from contextual menu
                 {
-                    ClientDiscoveryWindow clientDiscoveryWindow = new ClientDiscoveryWindow(args[1]); // Passing the path (second argument)
-                    clientDiscoveryWindow.Show();
+                    InstantiateClientDiscoveryWindow(args[1]); // Passing the path (second argument)
                 }
 
                 ListenInstancesAsync(); // Listens for other instances of Transfar launched
@@ -92,16 +93,7 @@ namespace Transfar
                     await Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                      {
                          //this.Hide(); // Hide the MainWindow
-                         try
-                         {
-                             ClientDiscoveryWindow clientDiscoveryWindow = new ClientDiscoveryWindow(filePath); // Passing the path
-                             clientDiscoveryWindow.Show();
-                         }
-                         catch (SocketException) // That means that I'm trying to open 2 ClientDiscoveryWindow (two servers)
-                         {
-                             MessageBox.Show("To start sending another file, close the open Transfar Windows.", "Transfar", MessageBoxButton.OK,
-                                 MessageBoxImage.Warning, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
-                         }
+                         InstantiateClientDiscoveryWindow(filePath);
                      }));
 
                 } while (true);
@@ -109,10 +101,36 @@ namespace Transfar
 
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void DiscoveryButton_Click(object sender, RoutedEventArgs e)
         {
-            ClientDiscoveryWindow clientDiscoveryWindow = new ClientDiscoveryWindow();
-            clientDiscoveryWindow.Show();
+            InstantiateClientDiscoveryWindow();
+        }
+
+        private void InstantiateClientDiscoveryWindow()
+        {
+            if ((cdw == null) || (cdw.IsLoaded == false)) // HACK: the first time cdw is null
+            {
+                cdw = new ClientDiscoveryWindow();
+                cdw.Show();
+            }
+            else
+            {
+                cdw.Activate();
+            }
+        }
+
+        private void InstantiateClientDiscoveryWindow(string filePath)
+        {
+            if ((cdw == null) || (cdw.IsLoaded == false)) // HACK: the first time cdw is null
+            {
+                cdw = new ClientDiscoveryWindow();
+                cdw.Show();
+            }
+            else // That means that I'm trying to open 2 ClientDiscoveryWindow (two servers)
+            {
+                MessageBox.Show("To start sending another file, close the open Transfar Windows.", "Transfar", MessageBoxButton.OK,
+                    MessageBoxImage.Warning, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+            }
         }
 
         private async void AvailabilityCheckbox_Checked(object sender, RoutedEventArgs e)
@@ -152,7 +170,21 @@ namespace Transfar
             {
                 while (true)
                 {
-                    client.Announce();
+                    try
+                    {
+                        client.Announce();
+                    }
+                    catch (SocketException) // Probably there is no network connection
+                    {
+                        MessageBox.Show("Probably there is no network connection. Transfar will be closed.", "Transfar", MessageBoxButton.OK,
+                                 MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+
+                        await Application.Current.Dispatcher.BeginInvoke(new Action(() => // GUI thread
+                        {
+                            //this.availabilityCheckbox.IsChecked = false;
+                            Application.Current.Shutdown();
+                        }));
+                    }
 
                     Thread.Sleep(1000);
 

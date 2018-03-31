@@ -97,6 +97,7 @@
     <Compile Include="FolderBrowser.cs" />
     <Compile Include="IPCClient.cs" />
     <Compile Include="IPCServer.cs" />
+    <Compile Include="NamedIPEndpoint.cs" />
     <Compile Include="ReceivingFileWindow.xaml.cs">
       <DependentUpon>ReceivingFileWindow.xaml</DependentUpon>
     </Compile>

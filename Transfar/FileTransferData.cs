@@ -5,6 +5,7 @@ namespace Transfar
 {
     public class FileTransferData
     {
+        public string HostName { get; set; }
         public string Name { get; set; }
         public string Path { get; set; }
         public long Length { get; set; }

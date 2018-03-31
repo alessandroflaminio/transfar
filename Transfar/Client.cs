@@ -13,7 +13,7 @@ namespace Transfar
         private IPEndPoint multicastEndpoint;
         TcpListener tcpListener;
 
-        private const string tfString = "TransferFileCS port "; //Stringa da inviare in broadcast
+        private const string tfString = "Transfar"; //Stringa da inviare in broadcast
         private static string multicastAddress = "239.255.42.99";
         private const int udpPort = 51000; //Porta di ascolto server UDP
 
@@ -30,7 +30,7 @@ namespace Transfar
             }
 
             udpClient = new UdpClient();
-            announcementBytes = Encoding.ASCII.GetBytes(tfString + tcpPort);
+            announcementBytes = Encoding.ASCII.GetBytes(tfString + '_' +  Environment.UserName + '_' + tcpPort);
             multicastEndpoint = new IPEndPoint(IPAddress.Parse(multicastAddress), udpPort);
         }
 
@@ -98,67 +98,81 @@ namespace Transfar
             //tcpListener.Stop();
         }
 
-        public void ReceiveFile(TcpClient client)
-        {
-            Console.WriteLine("[CLIENT] Receiving new file...");
+        //public void ReceiveFile(TcpClient client)
+        //{
+        //    Console.WriteLine("[CLIENT] Receiving new file...");
 
-            using (NetworkStream netStream = client.GetStream())
-            {
-                byte[] fileNameLengthBuffer = new byte[sizeof(int)];
-                netStream.Read(fileNameLengthBuffer, 0, fileNameLengthBuffer.Length);
-                int fileNameLength = BitConverter.ToInt32(fileNameLengthBuffer, 0);
+        //    using (NetworkStream netStream = client.GetStream())
+        //    {
+        //        byte[] fileNameLengthBuffer = new byte[sizeof(int)];
+        //        netStream.Read(fileNameLengthBuffer, 0, fileNameLengthBuffer.Length);
+        //        int fileNameLength = BitConverter.ToInt32(fileNameLengthBuffer, 0);
 
-                byte[] fileLengthBuffer = new byte[sizeof(long)];
-                netStream.Read(fileLengthBuffer, 0, fileLengthBuffer.Length);
+        //        byte[] fileLengthBuffer = new byte[sizeof(long)];
+        //        netStream.Read(fileLengthBuffer, 0, fileLengthBuffer.Length);
 
-                byte[] fileNameBuffer = new byte[fileNameLength];
-                netStream.Read(fileNameBuffer, 0, fileNameBuffer.Length);
+        //        byte[] fileNameBuffer = new byte[fileNameLength];
+        //        netStream.Read(fileNameBuffer, 0, fileNameBuffer.Length);
 
-                long fileLength = BitConverter.ToInt64(fileLengthBuffer, 0);
-                string fileName = Encoding.Unicode.GetString(fileNameBuffer);
+        //        long fileLength = BitConverter.ToInt64(fileLengthBuffer, 0);
+        //        string fileName = Encoding.Unicode.GetString(fileNameBuffer);
 
-                DirectoryInfo di = Directory.CreateDirectory(path); //Crea la directory specificata dal path se non già esistente
-                using (FileStream fileStream = File.Create(path + "//" + fileName)) //Utilizzo la direttiva using per rilasciare automaticamente le risorse alla fine del blocco
-                {
-                    var buffer = new byte[256 * 1024];
-                    int bytesRead;
-                    while ((bytesRead = netStream.Read(buffer, 0, buffer.Length)) > 0)
-                    {
-                        fileStream.Write(buffer, 0, bytesRead);
-                    }
+        //        DirectoryInfo di = Directory.CreateDirectory(path); //Crea la directory specificata dal path se non già esistente
+        //        using (FileStream fileStream = File.Create(path + "//" + fileName)) //Utilizzo la direttiva using per rilasciare automaticamente le risorse alla fine del blocco
+        //        {
+        //            var buffer = new byte[256 * 1024];
+        //            int bytesRead;
+        //            while ((bytesRead = netStream.Read(buffer, 0, buffer.Length)) > 0)
+        //            {
+        //                fileStream.Write(buffer, 0, bytesRead);
+        //            }
 
-                    fileStream.Flush();
-                }
+        //            fileStream.Flush();
+        //        }
 
-                Console.WriteLine("[CLIENT] Received length: " + fileLength);
-                Console.WriteLine("[CLIENT] Received file name: " + fileName);
-            }
-        }
+        //        Console.WriteLine("[CLIENT] Received length: " + fileLength);
+        //        Console.WriteLine("[CLIENT] Received file name: " + fileName);
+        //    }
+        //}
 
         public FileTransferData StartReceiving(TcpClient client)
         {
             FileTransferData fileTransferData = new FileTransferData();
             NetworkStream netStream = client.GetStream();
+            netStream.ReadTimeout = 5; // TODO: Not working, find another way to realize that the sender has stopped
 
             Console.WriteLine("[CLIENT] Receiving new file...");
+
+            byte[] hostNameLengthBuffer = new byte[sizeof(int)];
+            netStream.Read(hostNameLengthBuffer, 0, hostNameLengthBuffer.Length);
+            int hostNameLength = BitConverter.ToInt32(hostNameLengthBuffer, 0);
+
+            byte[] hostNameBuffer = new byte[hostNameLength];
+            netStream.Read(hostNameBuffer, 0, hostNameBuffer.Length);
+
 
             byte[] fileNameLengthBuffer = new byte[sizeof(int)];
             netStream.Read(fileNameLengthBuffer, 0, fileNameLengthBuffer.Length);
             int fileNameLength = BitConverter.ToInt32(fileNameLengthBuffer, 0);
 
-            byte[] fileLengthBuffer = new byte[sizeof(long)];
-            netStream.Read(fileLengthBuffer, 0, fileLengthBuffer.Length);
-
             byte[] fileNameBuffer = new byte[fileNameLength];
             netStream.Read(fileNameBuffer, 0, fileNameBuffer.Length);
 
+
+            byte[] fileLengthBuffer = new byte[sizeof(long)];
+            netStream.Read(fileLengthBuffer, 0, fileLengthBuffer.Length);
+
+            
+            string hostName = Encoding.Unicode.GetString(hostNameBuffer);
             string fileName = Encoding.Unicode.GetString(fileNameBuffer);
             long fileLength = BitConverter.ToInt64(fileLengthBuffer, 0);
-            Console.WriteLine("[CLIENT] Received length: " + fileLength);
+            Console.WriteLine("[CLIENT] Received host name: " + hostName);
             Console.WriteLine("[CLIENT] Received file name: " + fileName);
+            Console.WriteLine("[CLIENT] Received length: " + fileLength);
 
             DirectoryInfo di = Directory.CreateDirectory(path);
 
+            fileTransferData.HostName = hostName;
             fileTransferData.Name = fileName;
             fileTransferData.Path = path + "//" + fileName;
             fileTransferData.Length = fileLength;

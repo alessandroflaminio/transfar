@@ -14,13 +14,13 @@ namespace Transfar
     {
         UdpClient udpClient;
 
-        private const string tfString = "TransferFileCS port ";
+        private const string tfString = "Transfar";
         private const int udpPort = 51000;
-        private List<IPEndPoint> availableClients;
+        private List<NamedIPEndPoint> availableClients; // TODO: NON E' RESETTATA QUANDO PREMO STOP E START NELLA CLIENTDISCOVERYWINDOW
 
         public Server()
         {
-            availableClients = new List<IPEndPoint>();
+            availableClients = new List<NamedIPEndPoint>();
 
             udpClient = new UdpClient(51000);
             udpClient.JoinMulticastGroup(IPAddress.Parse("239.255.42.99"));
@@ -36,24 +36,26 @@ namespace Transfar
          * Metodo che si occupa della scoperta di host disponibili.
          * Il while (availableClients.Count < 1) dovrebbe essere interrotto da un pulsante presente nella GUI.
          */
-        public IPEndPoint ClientDiscovery()
+        public NamedIPEndPoint ClientDiscovery()
         {
             Console.WriteLine("[SERVER] Searching hosts...");
 
             if (udpClient.Available > 0)
             {
                 IPEndPoint clientEp = new IPEndPoint(0, 0); //Inizializzo un oggetto "vuoto" di tipo IPEndPoint
-
+                
                 var clientRequestData = udpClient.Receive(ref clientEp);
                 var clientRequest = Encoding.ASCII.GetString(clientRequestData);
 
                 if (clientRequest.Contains(tfString)) //Se ho ricevuto il pacchetto di broadcast contente la stringa tfString
                 {
-                    clientEp.Port = Convert.ToInt32(clientRequest.Replace(tfString, "")); //Sostituendo la porta con la porta comunicatami all'interno del payload UDP
-                    if (!availableClients.Contains(clientEp))
+                    string[] announcement = clientRequest.Split('_');
+                    clientEp.Port = Convert.ToInt32(announcement[2]); //Sostituendo la porta con la porta comunicatami all'interno del payload UDP
+                    NamedIPEndPoint namedClientEp = new NamedIPEndPoint(announcement[1], clientEp);
+                    if (!availableClients.Contains(namedClientEp))
                     {
-                        availableClients.Add(clientEp); //Aggiungo il client alla lista dei client disponibili
-                        return clientEp;
+                        availableClients.Add(namedClientEp); //Aggiungo il client alla lista dei client disponibili
+                        return namedClientEp;
                     }
                 }
             }
@@ -68,6 +70,7 @@ namespace Transfar
         public FileTransferData StartSending(string filePath, IPEndPoint selectedClient)
         {
             FileTransferData fileTransferData = new FileTransferData();
+            fileTransferData.HostName = Environment.UserName;
 
             TcpClient tcpClient = new TcpClient();
             tcpClient.Connect(selectedClient); //Mi connetto al relativo client (lancia un'eccezione se non disponibile)
@@ -86,14 +89,22 @@ namespace Transfar
 
             fileTransferData.NetworkStream = tcpClient.GetStream();
 
+            byte[] hostNameLengthBuffer = BitConverter.GetBytes(Encoding.Unicode.GetByteCount(fileTransferData.HostName));
+            fileTransferData.NetworkStream.Write(hostNameLengthBuffer, 0, hostNameLengthBuffer.Length);
+
+            byte[] hostNameBuffer = Encoding.Unicode.GetBytes(fileTransferData.HostName);
+            fileTransferData.NetworkStream.Write(hostNameBuffer, 0, hostNameBuffer.Length);
+
+
             byte[] fileNameLengthBuffer = BitConverter.GetBytes(Encoding.Unicode.GetByteCount(fileTransferData.Name));
             fileTransferData.NetworkStream.Write(fileNameLengthBuffer, 0, fileNameLengthBuffer.Length);
 
-            byte[] fileLengthBuffer = BitConverter.GetBytes(fileTransferData.Length);
-            fileTransferData.NetworkStream.Write(fileLengthBuffer, 0, fileLengthBuffer.Length);
-
             byte[] fileNameBuffer = Encoding.Unicode.GetBytes(fileTransferData.Name);
             fileTransferData.NetworkStream.Write(fileNameBuffer, 0, fileNameBuffer.Length);
+
+
+            byte[] fileLengthBuffer = BitConverter.GetBytes(fileTransferData.Length);
+            fileTransferData.NetworkStream.Write(fileLengthBuffer, 0, fileLengthBuffer.Length);
 
             //using (FileStream fileStream = File.OpenRead(filePath))
             //    fileStream.CopyTo(netStream);
@@ -130,47 +141,47 @@ namespace Transfar
             fileTransferData.FileStream.Dispose();
         }
 
-        //Funzione che permette la scelta dell'host a cui inviare il file ed invia il file.
-        public void SendFile(string fileNamePath)
-        {
-            //Tramite una finestra della GUI dovrei selezionare il file che vorrei inviare
-            using (TcpClient tcpClient = new TcpClient()) //Apro la socket TCP
-            {
-                //Questa parte dovrebbe essere realizzata con la GUI
-                System.Console.WriteLine("[SERVER] Select client to which send file");
-                int i = 0;
-                IPEndPoint selectedClient;
-                foreach (var client in availableClients)
-                    System.Console.WriteLine("(" + i++ + "): " + client.ToString()); //[i]: 192.168.1.1 
-                var selectedIndex = Convert.ToInt32(System.Console.ReadLine()); //Seleziono il client al quale voglio inviare il file
-                selectedClient = availableClients.ElementAt(selectedIndex);
-                //
+        ////Funzione che permette la scelta dell'host a cui inviare il file ed invia il file.
+        //public void SendFile(string fileNamePath)
+        //{
+        //    //Tramite una finestra della GUI dovrei selezionare il file che vorrei inviare
+        //    using (TcpClient tcpClient = new TcpClient()) //Apro la socket TCP
+        //    {
+        //        //Questa parte dovrebbe essere realizzata con la GUI
+        //        System.Console.WriteLine("[SERVER] Select client to which send file");
+        //        int i = 0;
+        //        IPEndPoint selectedClient;
+        //        foreach (var client in availableClients)
+        //            System.Console.WriteLine("(" + i++ + "): " + client.ToString()); //[i]: 192.168.1.1 
+        //        var selectedIndex = Convert.ToInt32(System.Console.ReadLine()); //Seleziono il client al quale voglio inviare il file
+        //        selectedClient = availableClients.ElementAt(selectedIndex);
+        //        //
 
-                tcpClient.Connect(selectedClient); //Mi connetto al relativo client (lancia un'eccezione se non disponibile)
+        //        tcpClient.Connect(selectedClient); //Mi connetto al relativo client (lancia un'eccezione se non disponibile)
 
-                FileInfo fi = new FileInfo(fileNamePath); //Ottengo informazioni sul file specificato
-                long fileLength = fi.Length;
-                string fileName = fi.Name;
-                Console.WriteLine("[SERVER] File length of the sent file: " + fileLength);
-                Console.WriteLine("[SERVER] File name of the sent file: " + fileName);
+        //        FileInfo fi = new FileInfo(fileNamePath); //Ottengo informazioni sul file specificato
+        //        long fileLength = fi.Length;
+        //        string fileName = fi.Name;
+        //        Console.WriteLine("[SERVER] File length of the sent file: " + fileLength);
+        //        Console.WriteLine("[SERVER] File name of the sent file: " + fileName);
 
-                using (NetworkStream netStream = tcpClient.GetStream())
-                {
-                    byte[] fileNameLengthBuffer = BitConverter.GetBytes(Encoding.Unicode.GetByteCount(fileName));
-                    netStream.Write(fileNameLengthBuffer, 0, fileNameLengthBuffer.Length);
+        //        using (NetworkStream netStream = tcpClient.GetStream())
+        //        {
+        //            byte[] fileNameLengthBuffer = BitConverter.GetBytes(Encoding.Unicode.GetByteCount(fileName));
+        //            netStream.Write(fileNameLengthBuffer, 0, fileNameLengthBuffer.Length);
 
-                    byte[] fileLengthBuffer = BitConverter.GetBytes(fileLength);
-                    netStream.Write(fileLengthBuffer, 0, fileLengthBuffer.Length);
+        //            byte[] fileLengthBuffer = BitConverter.GetBytes(fileLength);
+        //            netStream.Write(fileLengthBuffer, 0, fileLengthBuffer.Length);
 
-                    byte[] fileNameBuffer = Encoding.Unicode.GetBytes(fileName);
-                    netStream.Write(fileNameBuffer, 0, fileNameBuffer.Length);
+        //            byte[] fileNameBuffer = Encoding.Unicode.GetBytes(fileName);
+        //            netStream.Write(fileNameBuffer, 0, fileNameBuffer.Length);
 
-                    using (FileStream fileStream = File.OpenRead(fileNamePath))
-                        fileStream.CopyTo(netStream);
+        //            using (FileStream fileStream = File.OpenRead(fileNamePath))
+        //                fileStream.CopyTo(netStream);
 
-                    Console.WriteLine("[SERVER] File sent successfully");
-                }
-            }
-        }
+        //            Console.WriteLine("[SERVER] File sent successfully");
+        //        }
+        //    }
+        //}
     }
 }
