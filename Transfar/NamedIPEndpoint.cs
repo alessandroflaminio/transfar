@@ -39,10 +39,5 @@ namespace Transfar
         {
             return !(point1 == point2);
         }
-
-        public override string ToString()
-        {
-            return Name + "->" + EndPoint.ToString();
-        }
     }
 }

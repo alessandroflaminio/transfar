@@ -5,13 +5,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Transfar"
         mc:Ignorable="d"
-        Title="ClientDiscoveryWindow" Height="300" Width="300" Closing="Window_Closing">
+        Title="ClientDiscoveryWindow" Height="300" Width="373.404" Closing="Window_Closing" ResizeMode="NoResize">
     <Grid>
-        <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" Height="25" Margin="10,184,0,0" VerticalAlignment="Top" Width="272"/>
-        <Button x:Name="startButton" Content="Start" HorizontalAlignment="Left" Margin="10,229,0,0" VerticalAlignment="Top" Width="75" Click="startButton_Click"/>
-        <Button x:Name="stopButton" Content="Stop" HorizontalAlignment="Left" Margin="100,229,0,0" VerticalAlignment="Top" Width="75" Click="stopButton_Click" IsEnabled="False"/>
-        <ListBox x:Name="clientsListBox" HorizontalAlignment="Left" Height="162" Margin="10,10,0,0" VerticalAlignment="Top" Width="272" SelectionChanged="clientsListBox_SelectionChanged"/>
-        <Button x:Name="sendButton" Content="Send file..." HorizontalAlignment="Left" Margin="207,229,0,0" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="sendButton_Click"/>
+        <ProgressBar x:Name="progressBar" Height="25" Margin="10,184,10,0" VerticalAlignment="Top"/>
+        <Button x:Name="startButton" Content="Start discovery" HorizontalAlignment="Left" Margin="10,229,0,0" VerticalAlignment="Top" Width="102" Click="startButton_Click"/>
+        <Button x:Name="stopButton" Content="Stop discovery" HorizontalAlignment="Left" Margin="126,229,0,0" VerticalAlignment="Top" Width="99" Click="stopButton_Click" IsEnabled="False"/>
+
+        <ListView x:Name="clientsListView" Margin="10,49,10,103" SelectionChanged="clientsListView_SelectionChanged">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
+                    <GridViewColumn Header="IP address" DisplayMemberBinding="{Binding EndPoint.Address}" />
+                    <GridViewColumn Header="Port" DisplayMemberBinding="{Binding EndPoint.Port}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <Button x:Name="sendButton" Content="Send file..." Margin="246,229,10,0" VerticalAlignment="Top" IsEnabled="False" Click="sendButton_Click"/>
+        <Label Content="Please select an host to which send a file:" Margin="10,19,41,0" VerticalAlignment="Top" Height="25"/>
 
     </Grid>
 </Window>

@@ -101,9 +101,6 @@
     <Compile Include="ReceivingFileWindow.xaml.cs">
       <DependentUpon>ReceivingFileWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SelectFileWindow.xaml.cs">
-      <DependentUpon>SelectFileWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="SendingFileWindow.xaml.cs">
       <DependentUpon>SendingFileWindow.xaml</DependentUpon>
     </Compile>
@@ -131,10 +128,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="ReceivingFileWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="SelectFileWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

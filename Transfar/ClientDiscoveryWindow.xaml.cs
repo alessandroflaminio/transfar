@@ -47,15 +47,16 @@ namespace Transfar
             var progressIndicator = new Progress<int>(ReportProgress);
             var reportIndicator = new Progress<NamedIPEndPoint>(ReportAddition);
 
-            clientsListBox.Items.Clear();
+            clientsListView.Items.Clear();
 
             try
             {
                 await ClientDiscoveryAsync(reportIndicator, progressIndicator, cts.Token);
             }
-            catch (Exception)
+            catch (OperationCanceledException)
             {
                 Console.WriteLine("Cancellation requested!");
+                server.ResetAvailableClients(); // HACK: Resets the list of the available clients in the server object
             }
 
             stopButton.IsDefault = false;
@@ -75,7 +76,8 @@ namespace Transfar
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            stopButton_Click(this, new RoutedEventArgs()); // HACK: to dispose the processes that are executing
+            if(stopButton.IsEnabled) // Check if there is something to interrupt
+                stopButton_Click(this, new RoutedEventArgs()); // HACK: to dispose the processes that are executing
             server.Dispose();
         }
 
@@ -86,8 +88,8 @@ namespace Transfar
 
         private void ReportAddition(NamedIPEndPoint client)
         {
-            if (client != null && !clientsListBox.Items.Contains(client))
-                clientsListBox.Items.Add(client);
+            if (client != null && !clientsListView.Items.Contains(client))
+                clientsListView.Items.Add(client);
         }
 
         private async Task ClientDiscoveryAsync(IProgress<NamedIPEndPoint> reportIndicator, IProgress<int> progressIndicator, CancellationToken token)
@@ -107,9 +109,9 @@ namespace Transfar
             }, token);
         }
 
-        private void clientsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void clientsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (clientsListBox.SelectedItem != null)
+            if (clientsListView.SelectedItem != null)
             {
                 sendButton.IsEnabled = true;
             }
@@ -121,16 +123,25 @@ namespace Transfar
 
         private void sendButton_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine(clientsListBox.SelectedItem);
+            Console.WriteLine(clientsListView.SelectedItem);
 
-            SelectFileWindow selectFileWindow = new SelectFileWindow(server, ((NamedIPEndPoint) clientsListBox.SelectedItem).EndPoint);
-            selectFileWindow.Show();
-            selectFileWindow.Activate();
+            FolderBrowser fb = new FolderBrowser();
+            fb.Description = "Please select a file or folder below:";
+            fb.IncludeFiles = true;
+            fb.NewStyle = false;
+            //fb.InitialDirectory = @"C:\";
+            if (fb.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string filePath = fb.SelectedPath;
+                Console.WriteLine("Selected path:" + filePath);
+
+                SendingFileWindow sendingFileWindow = new SendingFileWindow(server, ((NamedIPEndPoint)clientsListView.SelectedItem).EndPoint, filePath);
+            }
         }
 
         private void sendButtonContextual_Click(object sender, RoutedEventArgs e)
         {
-            SendingFileWindow sendingFileWindow = new SendingFileWindow(server, ((NamedIPEndPoint)clientsListBox.SelectedItem).EndPoint,
+            SendingFileWindow sendingFileWindow = new SendingFileWindow(server, ((NamedIPEndPoint)clientsListView.SelectedItem).EndPoint,
                 filePath);
             sendingFileWindow.Show();
             sendingFileWindow.Activate();

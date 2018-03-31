@@ -51,7 +51,7 @@ namespace Transfar
             {
                 fileTransferData = server.StartSending(filePath, selectedClient);
             }
-            catch (SocketException e)
+            catch (SocketException)
             {
                 MessageBox.Show("The selected host is unavailable.", "Transfar", MessageBoxButton.OK,
                     MessageBoxImage.Stop, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
@@ -87,7 +87,18 @@ namespace Transfar
 
                     while (fileTransferData.Length > 0)
                     {
-                        server.Send(fileTransferData);
+                        try
+                        {
+                            server.Send(fileTransferData);
+                        }
+                        catch (Exception)
+                        {
+                            MessageBox.Show("The selected host is unavailable.", "Transfar", MessageBoxButton.OK,
+                                MessageBoxImage.Stop, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+                            server.CancelSending(fileTransferData);
+                            return;
+                        }
+
                         token.ThrowIfCancellationRequested();
 
                         //Thread.Sleep(500); // Waiting for testing purposes

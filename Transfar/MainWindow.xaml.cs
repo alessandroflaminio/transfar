@@ -21,7 +21,7 @@ namespace Transfar
 
         public MainWindow()
         {
-            CheckInstance();
+            CheckInstance(); // HACK: Temp disabled
             client = new Client();
             ConfigureTrayIcon();
 
@@ -31,7 +31,7 @@ namespace Transfar
         private void ConfigureTrayIcon()
         {
             ni = new System.Windows.Forms.NotifyIcon();
-            ni.Icon = new System.Drawing.Icon("C:\\Users\\Alessandro\\source\\repos\\Transfar\\Transfar\\Icon.ico");
+            ni.Icon = /*new System.Drawing.Icon*/(Properties.Resources.Icon);
             ni.Visible = true;
             ni.Click += ShowTransfarClick;
             ni.ContextMenu = new System.Windows.Forms.ContextMenu();
@@ -123,7 +123,7 @@ namespace Transfar
         {
             if ((cdw == null) || (cdw.IsLoaded == false)) // HACK: the first time cdw is null
             {
-                cdw = new ClientDiscoveryWindow();
+                cdw = new ClientDiscoveryWindow(filePath);
                 cdw.Show();
             }
             else // That means that I'm trying to open 2 ClientDiscoveryWindow (two servers)

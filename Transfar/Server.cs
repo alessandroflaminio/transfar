@@ -23,8 +23,14 @@ namespace Transfar
             availableClients = new List<NamedIPEndPoint>();
 
             udpClient = new UdpClient(51000);
-            udpClient.JoinMulticastGroup(IPAddress.Parse("239.255.42.99"));
+            udpClient.EnableBroadcast = true;
+            //udpClient.JoinMulticastGroup(IPAddress.Parse("239.255.42.99"));
 
+        }
+
+        public void ResetAvailableClients()
+        {
+            availableClients.Clear();
         }
 
         public void Dispose()
@@ -78,6 +84,8 @@ namespace Transfar
             if (Directory.Exists(filePath)) // TODO: (if folder) zip folder into a temp directory, than substitute the path into fileTransferData
             {
                 string tempPath = Path.GetTempPath() + new DirectoryInfo(filePath).Name + ".zip";
+                if(File.Exists(tempPath)) // check if the file already exists so that ZipFile doesn't throw an exception
+                    File.Delete(tempPath);
                 ZipFile.CreateFromDirectory(filePath, tempPath);
                 filePath = tempPath;
             }
@@ -88,6 +96,7 @@ namespace Transfar
             Console.WriteLine("[SERVER] File name of the sent file: " + fileTransferData.Name);
 
             fileTransferData.NetworkStream = tcpClient.GetStream();
+            fileTransferData.NetworkStream.WriteTimeout = 10000;
 
             byte[] hostNameLengthBuffer = BitConverter.GetBytes(Encoding.Unicode.GetByteCount(fileTransferData.HostName));
             fileTransferData.NetworkStream.Write(hostNameLengthBuffer, 0, hostNameLengthBuffer.Length);

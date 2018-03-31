@@ -10,7 +10,8 @@ namespace Transfar
     {
         private UdpClient udpClient;
         private Byte[] announcementBytes;
-        private IPEndPoint multicastEndpoint;
+        //private IPEndPoint multicastEndpoint;
+        private IPEndPoint broadcastEndpoint;
         TcpListener tcpListener;
 
         private const string tfString = "Transfar"; //Stringa da inviare in broadcast
@@ -31,7 +32,10 @@ namespace Transfar
 
             udpClient = new UdpClient();
             announcementBytes = Encoding.ASCII.GetBytes(tfString + '_' +  Environment.UserName + '_' + tcpPort);
-            multicastEndpoint = new IPEndPoint(IPAddress.Parse(multicastAddress), udpPort);
+
+            udpClient.EnableBroadcast = true; // HACK: problems with multicast
+            broadcastEndpoint = new IPEndPoint(IPAddress.Broadcast, udpPort);
+            //multicastEndpoint = new IPEndPoint(IPAddress.Parse(multicastAddress), udpPort);
         }
 
         public void Dispose()
@@ -75,7 +79,7 @@ namespace Transfar
             //udpClient.JoinMulticastGroup(IPAddress.Parse(multicastAddress)); Devo solo inviare nel gruppo multicast
             Console.WriteLine("[CLIENT] Sending broadcast datagrams...");
             
-            udpClient.Send(announcementBytes, announcementBytes.Length, multicastEndpoint);
+            udpClient.Send(announcementBytes, announcementBytes.Length, broadcastEndpoint);
             //Thread.Sleep(50);
         }
 
@@ -139,7 +143,7 @@ namespace Transfar
         {
             FileTransferData fileTransferData = new FileTransferData();
             NetworkStream netStream = client.GetStream();
-            netStream.ReadTimeout = 5; // TODO: Not working, find another way to realize that the sender has stopped
+            //netStream.ReadTimeout = 5000; // TODO: Not working, find another way to realize that the sender has stopped
 
             Console.WriteLine("[CLIENT] Receiving new file...");
 
@@ -184,6 +188,8 @@ namespace Transfar
         // To be in a while loop
         public void Receive(FileTransferData fileTransferData)
         {
+            //fileTransferData.NetworkStream.ReadTimeout = 5000; // HACK: not working
+
             var buffer = new byte[256 * 1024];
             int bytesRead;
             if (((bytesRead = fileTransferData.NetworkStream.Read(buffer, 0, buffer.Length)) > 0) && (fileTransferData.Length > 0))
@@ -191,6 +197,8 @@ namespace Transfar
                 fileTransferData.FileStream.Write(buffer, 0, bytesRead);
                 fileTransferData.Length -= bytesRead;
             }
+            else
+                throw new SocketException(1);
         }
 
         public void EndReceiving(FileTransferData fileTransferData)
@@ -203,7 +211,7 @@ namespace Transfar
         public void CancelReceiving(FileTransferData fileTransferData)
         {
             fileTransferData.NetworkStream.Dispose();
-            fileTransferData.FileStream.Dispose();
+            fileTransferData.FileStream?.Dispose();
             File.Delete(fileTransferData.Path);
         }
     }

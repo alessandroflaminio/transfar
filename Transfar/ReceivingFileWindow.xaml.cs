@@ -56,6 +56,7 @@ namespace Transfar
             cancelButton.Visibility = Visibility.Visible;
             yesButton.Visibility = Visibility.Hidden;
             noButton.Visibility = Visibility.Hidden;
+            fileInfo.Text = "Receiving file " + fileTransferData.Name + " from " + fileTransferData.HostName + "...";
 
             cts = new CancellationTokenSource();
             var progressIndicator = new Progress<double>(ReportProgress);
@@ -64,7 +65,7 @@ namespace Transfar
             {
                 await ReceiveFileAsync(progressIndicator, cts.Token);
             }
-            catch (Exception)
+            catch (OperationCanceledException)
             {
                 Console.WriteLine("Cancellation requested!");
             }
@@ -102,7 +103,7 @@ namespace Transfar
                         client.Receive(fileTransferData);
                         token.ThrowIfCancellationRequested();
 
-                        Thread.Sleep(500); // TODO: Waiting for testing purposes
+                        //Thread.Sleep(500); // HACK: Waiting for testing purposes
 
                         progressIndicator.Report(100 - ((float) fileTransferData.Length / originalLength * 100));
                     }
@@ -113,6 +114,14 @@ namespace Transfar
                 {
                     client.CancelReceiving(fileTransferData);
                     throw;
+                }
+                catch (SocketException)
+                {
+                    client.CancelReceiving(fileTransferData);
+
+                    MessageBox.Show("There was an error in receiving the file.", "Transfar", MessageBoxButton.OK,
+                        MessageBoxImage.Stop, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+                    throw new OperationCanceledException();
                 }
             }, token);
         }
