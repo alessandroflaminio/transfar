@@ -97,7 +97,7 @@ namespace Transfar
             Console.WriteLine("[SERVER] File name of the sent file: " + fileTransferData.Name);
 
             fileTransferData.NetworkStream = tcpClient.GetStream();
-            fileTransferData.NetworkStream.WriteTimeout = 10000;
+            fileTransferData.NetworkStream.WriteTimeout = 20000;
 
             byte[] hostNameLengthBuffer = BitConverter.GetBytes(Encoding.Unicode.GetByteCount(fileTransferData.HostName));
             fileTransferData.NetworkStream.Write(hostNameLengthBuffer, 0, hostNameLengthBuffer.Length);

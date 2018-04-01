@@ -61,6 +61,7 @@ namespace Transfar
             originalLength = fileTransferData.Length;
 
             // If there are no issues with the transfer I can show the window
+            fileInfo.Text = "Sending file " + fileTransferData.Name + " to " + fileTransferData.HostName + "...";
             this.Show();
             this.Activate();
 

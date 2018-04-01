@@ -21,18 +21,52 @@ namespace Transfar
         private CancellationTokenSource cts;
 
 
-        public ReceivingFileWindow(Client client, TcpClient tcpClient)
+        public ReceivingFileWindow(MainWindow mainWindow, Client client, TcpClient tcpClient)
         {
             this.client = client;
             this.tcpClient = tcpClient;
             fileTransferData = client.StartReceiving(tcpClient);
-
+            
             InitializeComponent();
-            fileInfo.Text = fileInfo.Text.Replace("CLIENT_NAME", fileTransferData.HostName).Replace("FILE_NAME", fileTransferData.Name);
+
+            if (Properties.Settings.Default.AutoAccept) // if auto-accepting files is enabled
+            {
+                mainWindow.Ni.BalloonTipTitle = "Transfar";
+                mainWindow.Ni.BalloonTipText = "Receiving file " + fileTransferData.Name + " from " + fileTransferData.HostName;
+                mainWindow.Ni.ShowBalloonTip(3000);
+
+                Yes_Button_Click(this, new RoutedEventArgs()); // HACK: to check that
+            }
+            else
+            {
+                fileInfo.Text = "Do you want to receive file " + fileTransferData.Name + " from " + fileTransferData.HostName + '?';
+                this.Show();
+                this.Activate();
+            }
         }
 
         private async void Yes_Button_Click(object sender, RoutedEventArgs e)
         {
+            if (!Properties.Settings.Default.SetPath) // if the path must be chosen each time the user receives a file
+            {
+                using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+                {
+                    dialog.Description = "Please choose the folder in which save the file.";
+                    System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+                    if (dialog.SelectedPath != "")
+                    {
+                        client.Path = dialog.SelectedPath;
+                        fileTransferData.Path = dialog.SelectedPath + "//" + fileTransferData.Name;
+                    }
+                    else // cancel the transfer
+                    {
+                        this.Close();
+                        return;
+                    }
+                    Debug.WriteLine(dialog.SelectedPath + " chosen for receiving file.");
+                }
+            }
+
             if (File.Exists(fileTransferData.Path) && !Properties.Settings.Default.AutoReplace) // if autoreplace is disabled
             {
                 if (MessageBox.Show(fileTransferData.Name + " already exists. Do you want to replace it?", "Transfar",

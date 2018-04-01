@@ -15,19 +15,19 @@ namespace Transfar
         TcpListener tcpListener;
 
         private const string tfString = "Transfar"; //Stringa da inviare in broadcast
-        private static string multicastAddress = "239.255.42.99";
+        //private static string multicastAddress = "239.255.42.99";
         private const int udpPort = 51000; //Porta di ascolto server UDP
 
-        public String path;
+        public String Path { get; set; }
         public static int tcpPort = 50000; //Porta di di ascolto client TCP
         //Vorrei poter settare queste cose via software e dunque riavviare il thread di segnalazione della presenza
 
         public Client()
         {
-            path = Properties.Settings.Default.Path;
-            if (path == "") // That's the case of the default path which is encoded in the .config file as an empty string
+            Path = Properties.Settings.Default.Path;
+            if (Path == "") // That's the case of the default Path which is encoded in the .config file as an empty string
             {
-                path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads\\Transfar";
+                Path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads\\Transfar";
             }
 
             udpClient = new UdpClient();
@@ -121,8 +121,8 @@ namespace Transfar
         //        long fileLength = BitConverter.ToInt64(fileLengthBuffer, 0);
         //        string fileName = Encoding.Unicode.GetString(fileNameBuffer);
 
-        //        DirectoryInfo di = Directory.CreateDirectory(path); //Crea la directory specificata dal path se non già esistente
-        //        using (FileStream fileStream = File.Create(path + "//" + fileName)) //Utilizzo la direttiva using per rilasciare automaticamente le risorse alla fine del blocco
+        //        DirectoryInfo di = Directory.CreateDirectory(Path); //Crea la directory specificata dal Path se non già esistente
+        //        using (FileStream fileStream = File.Create(Path + "//" + fileName)) //Utilizzo la direttiva using per rilasciare automaticamente le risorse alla fine del blocco
         //        {
         //            var buffer = new byte[256 * 1024];
         //            int bytesRead;
@@ -174,11 +174,11 @@ namespace Transfar
             Console.WriteLine("[CLIENT] Received file name: " + fileName);
             Console.WriteLine("[CLIENT] Received length: " + fileLength);
 
-            DirectoryInfo di = Directory.CreateDirectory(path);
+            DirectoryInfo di = Directory.CreateDirectory(Path);
 
             fileTransferData.HostName = hostName;
             fileTransferData.Name = fileName;
-            fileTransferData.Path = path + "//" + fileName;
+            fileTransferData.Path = Path + "//" + fileName;
             fileTransferData.Length = fileLength;
             fileTransferData.NetworkStream = netStream;
             fileTransferData.FileStream = null; //  File.Create(fileTransferData.Path); that's because the management is done on the GUI

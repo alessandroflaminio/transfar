@@ -15,7 +15,7 @@ namespace Transfar
     {
         private Client client;
         private CancellationTokenSource cts;
-        private System.Windows.Forms.NotifyIcon ni;
+        public System.Windows.Forms.NotifyIcon Ni { get; set; }
 
         private ClientDiscoveryWindow cdw;
 
@@ -30,12 +30,12 @@ namespace Transfar
 
         private void ConfigureTrayIcon()
         {
-            ni = new System.Windows.Forms.NotifyIcon();
-            ni.Icon = /*new System.Drawing.Icon*/(Properties.Resources.Icon);
-            ni.Visible = true;
-            ni.Click += ShowTransfarClick;
-            ni.ContextMenu = new System.Windows.Forms.ContextMenu();
-            ni.ContextMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("Exit Transfar", ExitTransfarClick));
+            Ni = new System.Windows.Forms.NotifyIcon();
+            Ni.Icon = /*new System.Drawing.Icon*/(Properties.Resources.Icon);
+            Ni.Visible = true;
+            Ni.Click += ShowTransfarClick;
+            Ni.ContextMenu = new System.Windows.Forms.ContextMenu();
+            Ni.ContextMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("Exit Transfar", ExitTransfarClick));
         }
 
         private void ExitTransfarClick(object sender, EventArgs e) => Application.Current.Shutdown();
@@ -159,9 +159,9 @@ namespace Transfar
 
         private void ReportNewFile(TcpClient tcpClient)
         {
-            ReceivingFileWindow receivingFileWindow = new ReceivingFileWindow(client, tcpClient);
-            receivingFileWindow.Show();
-            receivingFileWindow.Activate();
+            ReceivingFileWindow receivingFileWindow = new ReceivingFileWindow(this, client, tcpClient);
+            //receivingFileWindow.Show(); // HACK: done in the ReceivingFileWindow
+            //receivingFileWindow.Activate();
         }
 
         private async Task AnnounceAsync(CancellationToken token)

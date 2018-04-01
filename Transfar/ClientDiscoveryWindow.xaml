@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Transfar"
         mc:Ignorable="d"
-        Title="ClientDiscoveryWindow" Height="300" Width="373.404" Closing="Window_Closing" ResizeMode="NoResize">
+        Title="Transfar - Host selection" Height="300" Width="373.404" Closing="Window_Closing" ResizeMode="NoResize">
     <Grid>
         <ProgressBar x:Name="progressBar" Height="25" Margin="10,184,10,0" VerticalAlignment="Top"/>
         <Button x:Name="startButton" Content="Start discovery" HorizontalAlignment="Left" Margin="10,229,0,0" VerticalAlignment="Top" Width="102" Click="startButton_Click"/>
