@@ -53,9 +53,9 @@ namespace Transfar
                 {
                     dialog.Description = "Please choose the folder in which save the file.";
                     System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-                    if (dialog.SelectedPath != "")
+                    if (dialog.SelectedPath != "") // TODO: Sometimes the default path is already set to Desktop, probably that's an issue of the FolderBrowser that is open in another thread
                     {
-                        client.Path = dialog.SelectedPath;
+                        client.Path = dialog.SelectedPath; // TODO: CHECK THAT, PROBABLY AN ISSUE (no)
                         fileTransferData.Path = dialog.SelectedPath + "//" + fileTransferData.Name;
                     }
                     else // cancel the transfer
@@ -100,7 +100,7 @@ namespace Transfar
             }
             catch (OperationCanceledException)
             {
-                Console.WriteLine("Cancellation requested!");
+                Debug.WriteLine("Cancellation requested!");
             }
 
             this.Close();

@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         Title="Transfar - Settings" Height="330" Width="599" Closing="Window_Closing" ResizeMode="NoResize">
     <Grid Margin="0" Height="307" VerticalAlignment="Top">
-        <CheckBox x:Name="defaultFolderCheckBox" Content="Save automatically files in this location:" Margin="28,31,0,0" HorizontalAlignment="Left" Width="242" Height="18" VerticalAlignment="Top" Checked="defaultFolderCheckBox_Checked" Unchecked="defaultFolderCheckBox_Unchecked"/>
+        <CheckBox x:Name="defaultFolderCheckBox" Content="Save automatically files in the selected path" Margin="28,31,0,0" HorizontalAlignment="Left" Width="256" Height="18" VerticalAlignment="Top" Checked="defaultFolderCheckBox_Checked" Unchecked="defaultFolderCheckBox_Unchecked"/>
         <TextBlock x:Name ="directoryPathTextBox" TextWrapping="Wrap" Text="{Binding DirectoryPath, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Margin="28,84,0,0" Height="25" HorizontalAlignment="Left" Width="242" VerticalAlignment="Top"/>
         <Button x:Name="resetPathButton" Click="resetPathButton_Click" Content="Reset default path" Margin="417,84,0,0" Height="25" HorizontalAlignment="Left" Width="129" VerticalAlignment="Top"/>
         <Button x:Name="filePickerButton" Click="filePickerButton_Click" Content="Select folder" Margin="306,84,0,0" Height="25" HorizontalAlignment="Left" Width="82" VerticalAlignment="Top"/>

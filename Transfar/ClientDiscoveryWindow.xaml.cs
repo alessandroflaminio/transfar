@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Net;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -54,7 +54,7 @@ namespace Transfar
             }
             catch (OperationCanceledException)
             {
-                Console.WriteLine("Cancellation requested!");
+                Debug.WriteLine("Cancellation requested!");
                 server.ResetAvailableClients(); // HACK: Resets the list of the available clients in the server object
             }
 
@@ -122,28 +122,35 @@ namespace Transfar
 
         private void sendButton_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine(clientsListView.SelectedItem);
+            Debug.WriteLine(clientsListView.SelectedItem);
 
             FolderBrowser fb = new FolderBrowser();
-            fb.Description = "Please select a file or folder below:";
+            fb.Description = "Please select a file or a folder below:";
             fb.IncludeFiles = true;
             fb.NewStyle = false;
             //fb.InitialDirectory = @"C:\";
             if (fb.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string filePath = fb.SelectedPath;
-                Console.WriteLine("Selected path:" + filePath);
+                Debug.WriteLine("Selected path:" + filePath);
 
-                SendingFileWindow sendingFileWindow = new SendingFileWindow(server, ((NamedIPEndPoint)clientsListView.SelectedItem).EndPoint, filePath);
+                for (int i = 0; i < clientsListView.SelectedItems.Count; i++)
+                {
+                    SendingFileWindow sendingFileWindow = new SendingFileWindow(server, (NamedIPEndPoint)clientsListView.SelectedItems[i], filePath);
+                }
+
+                this.Close();
             }
         }
 
         private void sendButtonContextual_Click(object sender, RoutedEventArgs e)
         {
-            SendingFileWindow sendingFileWindow = new SendingFileWindow(server, ((NamedIPEndPoint)clientsListView.SelectedItem).EndPoint,
-                filePath);
-            sendingFileWindow.Show();
-            sendingFileWindow.Activate();
+            for (int i = 0; i < clientsListView.SelectedItems.Count; i++)
+            {
+                SendingFileWindow sendingFileWindow = new SendingFileWindow(server, (NamedIPEndPoint)clientsListView.SelectedItems[i], filePath);
+            }
+            //sendingFileWindow.Show();
+            //sendingFileWindow.Activate();
 
             this.Close();
         }

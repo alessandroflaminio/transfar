@@ -30,6 +30,11 @@ namespace Transfar
             return hashCode;
         }
 
+        public override string ToString()
+        {
+            return Name + '@' + EndPoint.ToString();
+        }
+
         public static bool operator ==(NamedIPEndPoint point1, NamedIPEndPoint point2)
         {
             return EqualityComparer<NamedIPEndPoint>.Default.Equals(point1, point2);

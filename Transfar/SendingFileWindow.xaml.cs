@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,9 +11,8 @@ namespace Transfar
     /// </summary>
     public partial class SendingFileWindow : Window
     {
-        // TODO: you should change the textinfo in the window
         private Server server;
-        private IPEndPoint selectedClient;
+        private NamedIPEndPoint selectedClient;
         private string filePath;
         private long originalLength;
         private FileTransferData fileTransferData;
@@ -22,7 +20,7 @@ namespace Transfar
         private CancellationTokenSource cts;
 
 
-        public SendingFileWindow(Server server, IPEndPoint selectedClient, string filePath)
+        public SendingFileWindow(Server server, NamedIPEndPoint selectedClient, string filePath)
         {
             this.filePath = filePath;
             this.server = server;

@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         Title="Transfar" Height="350" Width="525" ResizeMode="NoResize">
     <Grid>
-        <Button x:Name="discoveryButton" Content="Start discovery" HorizontalAlignment="Left" Margin="32,279,0,0" VerticalAlignment="Top" Width="109" Click="DiscoveryButton_Click"/>
-        <CheckBox x:Name="availabilityCheckbox" Content="Enable discovery" HorizontalAlignment="Left" Margin="345,282,0,0" VerticalAlignment="Top" Checked="AvailabilityCheckbox_Checked" Unchecked="AvailabilityCheckbox_Unchecked"/>
+        <Button x:Name="discoveryButton" Content="Send file..." HorizontalAlignment="Left" Margin="32,279,0,0" VerticalAlignment="Top" Width="109" Click="DiscoveryButton_Click"/>
+        <CheckBox x:Name="availabilityCheckbox" Content="Public mode" HorizontalAlignment="Left" Margin="378,282,0,0" VerticalAlignment="Top" Checked="AvailabilityCheckbox_Checked" Unchecked="AvailabilityCheckbox_Unchecked" ToolTip="By checking this box you become visible to other hosts that want to send files via Transfar."/>
         <Image Margin="10,116,10,114" Source="Logo.png" Stretch="Fill" RenderOptions.BitmapScalingMode="Fant"/>
         <Button x:Name="settingsButton" Margin="0,25,25,0" VerticalAlignment="Top" Click="Settings_Button_Click" Height="45" HorizontalAlignment="Right" Width="45">
             <Image Height="36" Source="appbar.settings.png" Stretch="Uniform" Width="36"/>

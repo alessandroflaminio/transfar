@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 
 namespace Transfar
@@ -131,7 +132,7 @@ namespace Transfar
                 {
                     DirectoryPath = dialog.SelectedPath;
                 }
-                Console.WriteLine(dialog.SelectedPath);
+                Debug.WriteLine(dialog.SelectedPath);
             }
         }
 

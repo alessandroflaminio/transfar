@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -45,7 +45,7 @@ namespace Transfar
          */
         public NamedIPEndPoint ClientDiscovery()
         {
-            Console.WriteLine("[SERVER] Searching hosts...");
+            Debug.WriteLine("[SERVER] Searching hosts...");
 
             if (udpClient.Available > 0)
             {
@@ -69,18 +69,18 @@ namespace Transfar
 
             return null;
 
-            //Console.WriteLine("[SERVER] Received IP addresses:");
+            //Debug.WriteLine("[SERVER] Received IP addresses:");
             //foreach (var x in availableClients)
-            //    Console.WriteLine(x.ToString());
+            //    Debug.WriteLine(x.ToString());
         }
 
-        public FileTransferData StartSending(string filePath, IPEndPoint selectedClient)
+        public FileTransferData StartSending(string filePath, NamedIPEndPoint selectedClient)
         {
             FileTransferData fileTransferData = new FileTransferData();
-            fileTransferData.HostName = Environment.UserName;
+            fileTransferData.HostName = selectedClient.Name;
 
             TcpClient tcpClient = new TcpClient();
-            tcpClient.Connect(selectedClient); //Mi connetto al relativo client (lancia un'eccezione se non disponibile)
+            tcpClient.Connect(selectedClient.EndPoint); //Mi connetto al relativo client (lancia un'eccezione se non disponibile)
 
             if (Directory.Exists(filePath))
             {
@@ -93,8 +93,8 @@ namespace Transfar
             FileInfo fi = new FileInfo(filePath); //Ottengo informazioni sul file specificato
             fileTransferData.Name = fi.Name;
             fileTransferData.Length = fi.Length;
-            Console.WriteLine("[SERVER] File length of the sent file: " + fileTransferData.Length);
-            Console.WriteLine("[SERVER] File name of the sent file: " + fileTransferData.Name);
+            Debug.WriteLine("[SERVER] File length of the sent file: " + fileTransferData.Length);
+            Debug.WriteLine("[SERVER] File name of the sent file: " + fileTransferData.Name);
 
             fileTransferData.NetworkStream = tcpClient.GetStream();
             fileTransferData.NetworkStream.WriteTimeout = 20000;
@@ -121,7 +121,7 @@ namespace Transfar
             
             fileTransferData.FileStream = File.OpenRead(filePath);
 
-            Console.WriteLine("[SERVER] Initial file data sent successfully");
+            Debug.WriteLine("[SERVER] Initial file data sent successfully");
 
             return fileTransferData;
         }
@@ -158,11 +158,11 @@ namespace Transfar
         //    using (TcpClient tcpClient = new TcpClient()) //Apro la socket TCP
         //    {
         //        //Questa parte dovrebbe essere realizzata con la GUI
-        //        System.Console.WriteLine("[SERVER] Select client to which send file");
+        //        System.Debug.WriteLine("[SERVER] Select client to which send file");
         //        int i = 0;
         //        IPEndPoint selectedClient;
         //        foreach (var client in availableClients)
-        //            System.Console.WriteLine("(" + i++ + "): " + client.ToString()); //[i]: 192.168.1.1 
+        //            System.Debug.WriteLine("(" + i++ + "): " + client.ToString()); //[i]: 192.168.1.1 
         //        var selectedIndex = Convert.ToInt32(System.Console.ReadLine()); //Seleziono il client al quale voglio inviare il file
         //        selectedClient = availableClients.ElementAt(selectedIndex);
         //        //
@@ -172,8 +172,8 @@ namespace Transfar
         //        FileInfo fi = new FileInfo(fileNamePath); //Ottengo informazioni sul file specificato
         //        long fileLength = fi.Length;
         //        string fileName = fi.Name;
-        //        Console.WriteLine("[SERVER] File length of the sent file: " + fileLength);
-        //        Console.WriteLine("[SERVER] File name of the sent file: " + fileName);
+        //        Debug.WriteLine("[SERVER] File length of the sent file: " + fileLength);
+        //        Debug.WriteLine("[SERVER] File name of the sent file: " + fileName);
 
         //        using (NetworkStream netStream = tcpClient.GetStream())
         //        {
@@ -189,7 +189,7 @@ namespace Transfar
         //            using (FileStream fileStream = File.OpenRead(fileNamePath))
         //                fileStream.CopyTo(netStream);
 
-        //            Console.WriteLine("[SERVER] File sent successfully");
+        //            Debug.WriteLine("[SERVER] File sent successfully");
         //        }
         //    }
         //}

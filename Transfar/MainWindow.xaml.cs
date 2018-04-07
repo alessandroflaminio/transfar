@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
@@ -38,7 +39,7 @@ namespace Transfar
             Ni.ContextMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("Exit Transfar", ExitTransfarClick));
         }
 
-        private void ExitTransfarClick(object sender, EventArgs e) => Application.Current.Shutdown();
+        private void ExitTransfarClick(object sender, EventArgs e) => Application.Current.Shutdown(); // TODO: tray icon visible even after closing the app
 
         private void ShowTransfarClick(object sender, EventArgs e) => this.Show();
 
@@ -144,11 +145,11 @@ namespace Transfar
             }
             //catch (OperationCanceledException)
             //{
-            //    Console.WriteLine("Cancellation requested!");
+            //    Debug.WriteLine("Cancellation requested!");
             //}
             catch (SocketException)
             {
-                Console.WriteLine("The AcceptTcpClient was effectively blocked");
+                Debug.WriteLine("The AcceptTcpClient was effectively blocked");
             }
         }
 

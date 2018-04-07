@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
-using System.Linq;
 using System.Security.AccessControl;
 
 namespace Transfar
@@ -17,8 +15,6 @@ namespace Transfar
             pipeSecurity.AddAccessRule(new PipeAccessRule("Everyone", PipeAccessRights.ReadWrite, AccessControlType.Allow));
             server = new NamedPipeServerStream("TransfarContextualMenuHandler", PipeDirection.InOut, NamedPipeServerStream.MaxAllowedServerInstances,
                 PipeTransmissionMode.Message, PipeOptions.None, 512, 512, pipeSecurity);
-
-                //server = new NamedPipeServerStream("TransfarContextualMenuHandler", PipeDirection.Out, NamedPipeServerStream.MaxAllowedServerInstances);
         }
 
         // This function must be executed by the first instance of Transfar
@@ -27,13 +23,9 @@ namespace Transfar
             server.WaitForConnection();
             StreamReader reader = new StreamReader(server);
 
-            //int i = 0;
-            //do // read only one line
-            //{
-                string received = reader.ReadLine();
-                Console.WriteLine("[SERVER] Received IPC string: " + received);
-            //} while (i++ < 3);//String.IsNullOrWhiteSpace(args.Last()));
-
+            // I just read the file path
+            string received = reader.ReadLine();
+            Debug.WriteLine("[SERVER] Received IPC string: " + received);
 
             server.Close();
             return received;
