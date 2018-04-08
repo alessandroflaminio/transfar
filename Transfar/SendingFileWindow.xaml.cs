@@ -30,15 +30,12 @@ namespace Transfar
             StartSending();
         }
 
-        private void Cancel_Button_Click(object sender, RoutedEventArgs e)
-        {
-            cts.Cancel();
-        }
 
-        private void ReportProgress(double value)
-        {
-            progressBar.Value = value;
-        }
+        private void Cancel_Button_Click(object sender, RoutedEventArgs e) => cts.Cancel();
+
+
+        private void ReportProgress(double value) => progressBar.Value = value;
+
 
         private async void StartSending()
         {

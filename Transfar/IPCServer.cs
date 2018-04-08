@@ -9,6 +9,7 @@ namespace Transfar
     {
         private NamedPipeServerStream server;
 
+
         public IPCServer()
         {
             PipeSecurity pipeSecurity = new PipeSecurity();
@@ -17,6 +18,7 @@ namespace Transfar
                 PipeTransmissionMode.Message, PipeOptions.None, 512, 512, pipeSecurity);
         }
 
+        
         // This function must be executed by the first instance of Transfar
         public string Server()
         {

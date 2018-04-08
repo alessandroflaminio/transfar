@@ -18,6 +18,7 @@ namespace Transfar
         private const int udpPort = 51000;
         private List<NamedIPEndPoint> availableClients;
 
+
         public Server()
         {
             availableClients = new List<NamedIPEndPoint>();
@@ -28,16 +29,19 @@ namespace Transfar
 
         }
 
+
         public void ResetAvailableClients()
         {
             // This is done so that if I restart the search the list is reset
             availableClients.Clear();
         }
 
+
         public void Dispose()
         {
             udpClient.Dispose();
         }
+
 
         /*
          * Metodo che si occupa della scoperta di host disponibili.
@@ -73,6 +77,7 @@ namespace Transfar
             //foreach (var x in availableClients)
             //    Debug.WriteLine(x.ToString());
         }
+
 
         public FileTransferData StartSending(string filePath, NamedIPEndPoint selectedClient)
         {
@@ -126,6 +131,7 @@ namespace Transfar
             return fileTransferData;
         }
 
+
         // To be in a while loop
         public void Send(FileTransferData fileTransferData)
         {
@@ -138,6 +144,7 @@ namespace Transfar
             }
         }
 
+
         public void EndSending(FileTransferData fileTransferData)
         {
             fileTransferData.NetworkStream.Flush();
@@ -145,53 +152,57 @@ namespace Transfar
             fileTransferData.FileStream.Dispose();
         }
 
+
         public void CancelSending(FileTransferData fileTransferData)
         {
             fileTransferData.NetworkStream.Dispose();
             fileTransferData.FileStream.Dispose();
         }
 
-        ////Funzione che permette la scelta dell'host a cui inviare il file ed invia il file.
-        //public void SendFile(string fileNamePath)
-        //{
-        //    //Tramite una finestra della GUI dovrei selezionare il file che vorrei inviare
-        //    using (TcpClient tcpClient = new TcpClient()) //Apro la socket TCP
-        //    {
-        //        //Questa parte dovrebbe essere realizzata con la GUI
-        //        System.Debug.WriteLine("[SERVER] Select client to which send file");
-        //        int i = 0;
-        //        IPEndPoint selectedClient;
-        //        foreach (var client in availableClients)
-        //            System.Debug.WriteLine("(" + i++ + "): " + client.ToString()); //[i]: 192.168.1.1 
-        //        var selectedIndex = Convert.ToInt32(System.Console.ReadLine()); //Seleziono il client al quale voglio inviare il file
-        //        selectedClient = availableClients.ElementAt(selectedIndex);
-        //        //
 
-        //        tcpClient.Connect(selectedClient); //Mi connetto al relativo client (lancia un'eccezione se non disponibile)
+        /*
+        //Funzione che permette la scelta dell'host a cui inviare il file ed invia il file.
+        public void SendFile(string fileNamePath)
+        {
+            //Tramite una finestra della GUI dovrei selezionare il file che vorrei inviare
+            using (TcpClient tcpClient = new TcpClient()) //Apro la socket TCP
+            {
+                //Questa parte dovrebbe essere realizzata con la GUI
+                System.Debug.WriteLine("[SERVER] Select client to which send file");
+                int i = 0;
+                IPEndPoint selectedClient;
+                foreach (var client in availableClients)
+                    System.Debug.WriteLine("(" + i++ + "): " + client.ToString()); //[i]: 192.168.1.1 
+                var selectedIndex = Convert.ToInt32(System.Console.ReadLine()); //Seleziono il client al quale voglio inviare il file
+                selectedClient = availableClients.ElementAt(selectedIndex);
+                //
 
-        //        FileInfo fi = new FileInfo(fileNamePath); //Ottengo informazioni sul file specificato
-        //        long fileLength = fi.Length;
-        //        string fileName = fi.Name;
-        //        Debug.WriteLine("[SERVER] File length of the sent file: " + fileLength);
-        //        Debug.WriteLine("[SERVER] File name of the sent file: " + fileName);
+                tcpClient.Connect(selectedClient); //Mi connetto al relativo client (lancia un'eccezione se non disponibile)
 
-        //        using (NetworkStream netStream = tcpClient.GetStream())
-        //        {
-        //            byte[] fileNameLengthBuffer = BitConverter.GetBytes(Encoding.Unicode.GetByteCount(fileName));
-        //            netStream.Write(fileNameLengthBuffer, 0, fileNameLengthBuffer.Length);
+                FileInfo fi = new FileInfo(fileNamePath); //Ottengo informazioni sul file specificato
+                long fileLength = fi.Length;
+                string fileName = fi.Name;
+                Debug.WriteLine("[SERVER] File length of the sent file: " + fileLength);
+                Debug.WriteLine("[SERVER] File name of the sent file: " + fileName);
 
-        //            byte[] fileLengthBuffer = BitConverter.GetBytes(fileLength);
-        //            netStream.Write(fileLengthBuffer, 0, fileLengthBuffer.Length);
+                using (NetworkStream netStream = tcpClient.GetStream())
+                {
+                    byte[] fileNameLengthBuffer = BitConverter.GetBytes(Encoding.Unicode.GetByteCount(fileName));
+                    netStream.Write(fileNameLengthBuffer, 0, fileNameLengthBuffer.Length);
 
-        //            byte[] fileNameBuffer = Encoding.Unicode.GetBytes(fileName);
-        //            netStream.Write(fileNameBuffer, 0, fileNameBuffer.Length);
+                    byte[] fileLengthBuffer = BitConverter.GetBytes(fileLength);
+                    netStream.Write(fileLengthBuffer, 0, fileLengthBuffer.Length);
 
-        //            using (FileStream fileStream = File.OpenRead(fileNamePath))
-        //                fileStream.CopyTo(netStream);
+                    byte[] fileNameBuffer = Encoding.Unicode.GetBytes(fileName);
+                    netStream.Write(fileNameBuffer, 0, fileNameBuffer.Length);
 
-        //            Debug.WriteLine("[SERVER] File sent successfully");
-        //        }
-        //    }
-        //}
+                    using (FileStream fileStream = File.OpenRead(fileNamePath))
+                        fileStream.CopyTo(netStream);
+
+                    Debug.WriteLine("[SERVER] File sent successfully");
+                }
+            }
+        }
+        */
     }
 }

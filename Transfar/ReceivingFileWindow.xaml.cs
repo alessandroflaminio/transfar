@@ -45,6 +45,7 @@ namespace Transfar
             }
         }
 
+
         private async void Yes_Button_Click(object sender, RoutedEventArgs e)
         {
             if (!Properties.Settings.Default.SetPath) // if the path must be chosen each time the user receives a file
@@ -53,9 +54,9 @@ namespace Transfar
                 {
                     dialog.Description = "Please choose the folder in which save the file.";
                     System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-                    if (dialog.SelectedPath != "") // TODO: Sometimes the default path is already set to Desktop, probably that's an issue of the FolderBrowser that is open in another thread
+                    if (dialog.SelectedPath != "") // TODO: Sometimes the default path is already set to Desktop, probably that's an issue of the FolderBrowser that is open in another thread (happens only when self-transferring)
                     {
-                        client.Path = dialog.SelectedPath; // TODO: CHECK THAT, PROBABLY AN ISSUE (no)
+                        client.Path = dialog.SelectedPath;
                         fileTransferData.Path = dialog.SelectedPath + "//" + fileTransferData.Name;
                     }
                     else // cancel the transfer
@@ -106,6 +107,7 @@ namespace Transfar
             this.Close();
         }
 
+
         private void No_Button_Click(object sender, RoutedEventArgs e)
         {
             client.CancelReceiving(fileTransferData);
@@ -113,15 +115,12 @@ namespace Transfar
             this.Close();
         }
 
-        private void Cancel_Button_Click(object sender, RoutedEventArgs e)
-        {
-            cts.Cancel();
-        }
 
-        private void ReportProgress(double value)
-        {
-            progressBar.Value = value;
-        }
+        private void Cancel_Button_Click(object sender, RoutedEventArgs e) => cts.Cancel();
+
+
+        private void ReportProgress(double value) => progressBar.Value = value;
+
 
         private async Task ReceiveFileAsync(IProgress<double> progressIndicator, CancellationToken token)
         {
@@ -158,7 +157,5 @@ namespace Transfar
                 }
             }, token);
         }
-
-
     }
 }

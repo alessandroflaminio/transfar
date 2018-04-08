@@ -41,6 +41,7 @@ namespace Transfar
             }
         }
 
+
         public SettingsWindow(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
@@ -87,6 +88,7 @@ namespace Transfar
             }
         }
 
+
         protected void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
@@ -95,10 +97,12 @@ namespace Transfar
             }
         }
 
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             mainWindow.Show();
         }
+
 
         private void defaultFolderCheckBox_Checked(object sender, RoutedEventArgs e)
         {
@@ -111,6 +115,7 @@ namespace Transfar
             applyButton.IsEnabled = true;
         }
 
+
         private void defaultFolderCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.SetPath = false;
@@ -121,6 +126,7 @@ namespace Transfar
 
             applyButton.IsEnabled = true;
         }
+
 
         private void filePickerButton_Click(object sender, RoutedEventArgs e)
         {
@@ -136,16 +142,16 @@ namespace Transfar
             }
         }
 
+
         private void applyButton_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.Save();
             applyButton.IsEnabled = false;
         }
 
-        private void resetPathButton_Click(object sender, RoutedEventArgs e)
-        {
-            DirectoryPath = defaultPath;
-        }
+
+        private void resetPathButton_Click(object sender, RoutedEventArgs e) => DirectoryPath = defaultPath;
+
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
@@ -154,11 +160,13 @@ namespace Transfar
             this.Close();
         }
        
+
         private void autoAcceptCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.AutoAccept = true;
             applyButton.IsEnabled = true;
         }
+
 
         private void autoReplaceCheckBox_Checked(object sender, RoutedEventArgs e)
         {
@@ -166,17 +174,20 @@ namespace Transfar
             applyButton.IsEnabled = true;
         }
 
+
         private void autoAcceptCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.AutoAccept = false;
             applyButton.IsEnabled = true;
         }
 
+
         private void autoReplaceCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.AutoReplace = false;
             applyButton.IsEnabled = true;
         }
+
 
         private void cancelButton_Click(object sender, RoutedEventArgs e)
         {

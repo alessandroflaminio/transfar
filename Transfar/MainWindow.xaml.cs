@@ -20,6 +20,7 @@ namespace Transfar
 
         private ClientDiscoveryWindow cdw;
 
+
         public MainWindow()
         {
             CheckInstance();
@@ -29,33 +30,38 @@ namespace Transfar
             InitializeComponent();
         }
 
+
         private void ConfigureTrayIcon()
         {
             Ni = new System.Windows.Forms.NotifyIcon();
-            Ni.Icon = /*new System.Drawing.Icon*/(Properties.Resources.Icon);
+            Ni.Icon = Properties.Resources.Icon;
             Ni.Visible = true;
             Ni.Click += ShowTransfarClick;
             Ni.ContextMenu = new System.Windows.Forms.ContextMenu();
             Ni.ContextMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("Exit Transfar", ExitTransfarClick));
         }
 
+
         private void ExitTransfarClick(object sender, EventArgs e) => Application.Current.Shutdown(); // TODO: tray icon visible even after closing the app
+
 
         private void ShowTransfarClick(object sender, EventArgs e) => this.Show();
 
+
         protected override void OnClosing(CancelEventArgs e)
         {
-            e.Cancel = true; // setting cancel to true will cancel the close request so the application is not closed
+            e.Cancel = true; // setting cancel to true will cancel the close request so that the application is not closed
 
             this.Hide();
 
             base.OnClosing(e);
         }
 
+
         private void CheckInstance()
         {
             // If Transfar is already running
-            if (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
+            if (Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
             {
                 string[] args = Environment.GetCommandLineArgs();
                 if (args.Count() > 1) // If launched from contextual menu
@@ -72,7 +78,7 @@ namespace Transfar
             else // If there isn't a running instance of Transfar
             {
                 string[] args = Environment.GetCommandLineArgs();
-                if (args.Count() > 1) // If launched from contextual menu
+                if (args.Count() > 1) // If launched from contextual menu (that means that I will have some args passed to the .exe)
                 {
                     InstantiateClientDiscoveryWindow(args[1]); // Passing the path (second argument)
                 }
@@ -80,6 +86,7 @@ namespace Transfar
                 ListenInstancesAsync(); // Listens for other instances of Transfar launched
             }
         }
+
 
         private async void ListenInstancesAsync()
         {
@@ -102,6 +109,7 @@ namespace Transfar
 
         }
 
+
         private void DiscoveryButton_Click(object sender, RoutedEventArgs e)
         {
             InstantiateClientDiscoveryWindow();
@@ -120,9 +128,10 @@ namespace Transfar
             }
         }
 
+
         private void InstantiateClientDiscoveryWindow(string filePath)
         {
-            if ((cdw == null) || (cdw.IsLoaded == false)) // HACK: the first time cdw is null
+            if ((cdw == null) || (cdw.IsLoaded == false)) // HACK: the first time cdw is null, so the second condition will not be evaluated
             {
                 cdw = new ClientDiscoveryWindow(filePath);
                 cdw.Show();
@@ -134,6 +143,7 @@ namespace Transfar
             }
         }
 
+
         private async void AvailabilityCheckbox_Checked(object sender, RoutedEventArgs e)
         {
             cts = new CancellationTokenSource();
@@ -143,27 +153,18 @@ namespace Transfar
             {
                 await Task.WhenAll(AnnounceAsync(cts.Token), ListenRequestsAsync(reportIndicator));
             }
-            //catch (OperationCanceledException)
-            //{
-            //    Debug.WriteLine("Cancellation requested!");
-            //}
             catch (SocketException)
             {
                 Debug.WriteLine("The AcceptTcpClient was effectively blocked");
             }
         }
 
-        private void AvailabilityCheckbox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            cts.Cancel();
-        }
 
-        private void ReportNewFile(TcpClient tcpClient)
-        {
-            ReceivingFileWindow receivingFileWindow = new ReceivingFileWindow(this, client, tcpClient);
-            //receivingFileWindow.Show(); // HACK: done in the ReceivingFileWindow
-            //receivingFileWindow.Activate();
-        }
+        private void AvailabilityCheckbox_Unchecked(object sender, RoutedEventArgs e) => cts.Cancel();
+
+
+        private void ReportNewFile(TcpClient tcpClient) => new ReceivingFileWindow(this, client, tcpClient);
+
 
         private async Task AnnounceAsync(CancellationToken token)
         {
@@ -182,7 +183,6 @@ namespace Transfar
 
                         await Application.Current.Dispatcher.BeginInvoke(new Action(() => // GUI thread
                         {
-                            //this.availabilityCheckbox.IsChecked = false;
                             Application.Current.Shutdown();
                         }));
                     }
@@ -198,6 +198,7 @@ namespace Transfar
             }, token);
         }
 
+
         private async Task ListenRequestsAsync(IProgress<TcpClient> reportIndicator)
         {
             await Task.Run(async () => // async put so that the exception is thrown to the caller
@@ -210,6 +211,7 @@ namespace Transfar
                 }
             });
         }
+
 
         private void Settings_Button_Click(object sender, RoutedEventArgs e)
         {

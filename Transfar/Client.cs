@@ -22,6 +22,7 @@ namespace Transfar
         public static int tcpPort = 50000; //Porta di di ascolto client TCP
         //Vorrei poter settare queste cose via software e dunque riavviare il thread di segnalazione della presenza
 
+
         public Client()
         {
             Path = Properties.Settings.Default.Path;
@@ -38,11 +39,13 @@ namespace Transfar
             //multicastEndpoint = new IPEndPoint(IPAddress.Parse(multicastAddress), udpPort);
         }
 
+
         public void Dispose()
         {
             udpClient.Dispose();
             tcpListener.Stop();
         }
+
 
         /*
          * Funzione che avvia l'ascolto di eventuali connessioni da parte di un server che
@@ -58,6 +61,7 @@ namespace Transfar
             tcpListener.Start();
         }
 
+
         /*
          * Funzione per stoppare la ricezione
          */
@@ -68,6 +72,7 @@ namespace Transfar
                 tcpListener.Stop();
             }
         }
+
 
         /*
          * Funzione che comunica la presenza ad altri host ogni 100 ms.
@@ -82,6 +87,7 @@ namespace Transfar
             udpClient.Send(announcementBytes, announcementBytes.Length, broadcastEndpoint);
             //Thread.Sleep(50);
         }
+
 
         /*
          * Metodo che si occupa di ascoltare le richieste di invio file.
@@ -101,43 +107,7 @@ namespace Transfar
 
             //tcpListener.Stop();
         }
-
-        //public void ReceiveFile(TcpClient client)
-        //{
-        //    Console.WriteLine("[CLIENT] Receiving new file...");
-
-        //    using (NetworkStream netStream = client.GetStream())
-        //    {
-        //        byte[] fileNameLengthBuffer = new byte[sizeof(int)];
-        //        netStream.Read(fileNameLengthBuffer, 0, fileNameLengthBuffer.Length);
-        //        int fileNameLength = BitConverter.ToInt32(fileNameLengthBuffer, 0);
-
-        //        byte[] fileLengthBuffer = new byte[sizeof(long)];
-        //        netStream.Read(fileLengthBuffer, 0, fileLengthBuffer.Length);
-
-        //        byte[] fileNameBuffer = new byte[fileNameLength];
-        //        netStream.Read(fileNameBuffer, 0, fileNameBuffer.Length);
-
-        //        long fileLength = BitConverter.ToInt64(fileLengthBuffer, 0);
-        //        string fileName = Encoding.Unicode.GetString(fileNameBuffer);
-
-        //        DirectoryInfo di = Directory.CreateDirectory(Path); //Crea la directory specificata dal Path se non già esistente
-        //        using (FileStream fileStream = File.Create(Path + "//" + fileName)) //Utilizzo la direttiva using per rilasciare automaticamente le risorse alla fine del blocco
-        //        {
-        //            var buffer = new byte[256 * 1024];
-        //            int bytesRead;
-        //            while ((bytesRead = netStream.Read(buffer, 0, buffer.Length)) > 0)
-        //            {
-        //                fileStream.Write(buffer, 0, bytesRead);
-        //            }
-
-        //            fileStream.Flush();
-        //        }
-
-        //        Console.WriteLine("[CLIENT] Received length: " + fileLength);
-        //        Console.WriteLine("[CLIENT] Received file name: " + fileName);
-        //    }
-        //}
+        
 
         public FileTransferData StartReceiving(TcpClient client)
         {
@@ -185,6 +155,7 @@ namespace Transfar
             return fileTransferData;
         }
 
+
         // To be in a while loop
         public void Receive(FileTransferData fileTransferData)
         {
@@ -201,6 +172,7 @@ namespace Transfar
                 throw new SocketException(1);
         }
 
+
         public void EndReceiving(FileTransferData fileTransferData)
         {
             fileTransferData.FileStream.Flush();
@@ -208,11 +180,52 @@ namespace Transfar
             fileTransferData.FileStream.Dispose();
         }
 
+
         public void CancelReceiving(FileTransferData fileTransferData)
         {
             fileTransferData.NetworkStream.Dispose();
             fileTransferData.FileStream?.Dispose();
             File.Delete(fileTransferData.Path);
         }
+        
+
+        /*
+        public void ReceiveFile(TcpClient client)
+        {
+            Console.WriteLine("[CLIENT] Receiving new file...");
+
+            using (NetworkStream netStream = client.GetStream())
+            {
+                byte[] fileNameLengthBuffer = new byte[sizeof(int)];
+                netStream.Read(fileNameLengthBuffer, 0, fileNameLengthBuffer.Length);
+                int fileNameLength = BitConverter.ToInt32(fileNameLengthBuffer, 0);
+
+                byte[] fileLengthBuffer = new byte[sizeof(long)];
+                netStream.Read(fileLengthBuffer, 0, fileLengthBuffer.Length);
+
+                byte[] fileNameBuffer = new byte[fileNameLength];
+                netStream.Read(fileNameBuffer, 0, fileNameBuffer.Length);
+
+                long fileLength = BitConverter.ToInt64(fileLengthBuffer, 0);
+                string fileName = Encoding.Unicode.GetString(fileNameBuffer);
+
+                DirectoryInfo di = Directory.CreateDirectory(Path); //Crea la directory specificata dal Path se non già esistente
+                using (FileStream fileStream = File.Create(Path + "//" + fileName)) //Utilizzo la direttiva using per rilasciare automaticamente le risorse alla fine del blocco
+                {
+                    var buffer = new byte[256 * 1024];
+                    int bytesRead;
+                    while ((bytesRead = netStream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        fileStream.Write(buffer, 0, bytesRead);
+                    }
+
+                    fileStream.Flush();
+                }
+
+                Console.WriteLine("[CLIENT] Received length: " + fileLength);
+                Console.WriteLine("[CLIENT] Received file name: " + fileName);
+            }
+        }
+        */
     }
 }
