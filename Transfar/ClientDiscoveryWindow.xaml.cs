@@ -31,6 +31,7 @@ namespace Transfar
 
             InitializeComponent();
 
+            infoLabel.Content = "Please select an host to which send the selected file:";
             sendButton.Content = "Send file";
             sendButton.Click -= sendButton_Click;
             sendButton.Click += sendButtonContextual_Click;
@@ -82,7 +83,7 @@ namespace Transfar
 
         private void ReportProgress(int value)
         {
-            progressBar.Value = value; // Attualmente il primo progresso è 0, controllare come viene assegnato il Report nella Async
+            progressBar.Value = value;
         }
 
         private void ReportAddition(NamedIPEndPoint client)
@@ -149,8 +150,6 @@ namespace Transfar
             {
                 SendingFileWindow sendingFileWindow = new SendingFileWindow(server, (NamedIPEndPoint)clientsListView.SelectedItems[i], filePath);
             }
-            //sendingFileWindow.Show();
-            //sendingFileWindow.Activate();
 
             this.Close();
         }

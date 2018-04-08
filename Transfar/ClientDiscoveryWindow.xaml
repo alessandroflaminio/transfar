@@ -22,7 +22,7 @@
         </ListView>
 
         <Button x:Name="sendButton" Content="Send file..." Margin="246,229,10,0" VerticalAlignment="Top" IsEnabled="False" Click="sendButton_Click"/>
-        <Label Content="Please select an host to which send a file:" Margin="10,19,41,0" VerticalAlignment="Top" Height="25"/>
+        <Label x:Name="infoLabel" Content="Please select an host to which send a file:" Margin="10,16,10,0" VerticalAlignment="Top" Height="25"/>
 
     </Grid>
 </Window>
