@@ -34,7 +34,11 @@ namespace Transfar
             announcementBytes = Encoding.ASCII.GetBytes(tfString + '_' +  Environment.UserName + '_' + tcpPort);
 
             udpClient.EnableBroadcast = true; // HACK: problems with multicast
-            broadcastEndpoint = new IPEndPoint(IPAddress.Broadcast, udpPort);
+            //HACK: not working //broadcastEndpoint = new IPEndPoint(IPAddress.Broadcast, udpPort);
+            IPAddress localAddress = AddressUtils.GetLocalIPAddress();
+            IPAddress localSubnetMask = AddressUtils.GetSubnetMask(localAddress);
+
+            broadcastEndpoint = new IPEndPoint(AddressUtils.GetBroadcastAddress(localAddress, localSubnetMask), udpPort);
             //multicastEndpoint = new IPEndPoint(IPAddress.Parse(multicastAddress), udpPort);
         }
 
