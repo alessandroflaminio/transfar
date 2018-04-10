@@ -14,13 +14,12 @@ namespace Transfar
         private IPEndPoint broadcastEndpoint;
         TcpListener tcpListener;
 
-        private const string tfString = "Transfar"; //Stringa da inviare in broadcast
+        private const string tfString = "Transfar"; // String broadcasted to detect Transfar packets
         //private static string multicastAddress = "239.255.42.99";
-        private const int udpPort = 51000; //Porta di ascolto server UDP
+        private const int udpPort = 51000; // Listening UDP port (server)
 
         public String Path { get; set; }
-        public static int tcpPort = 50000; //Porta di di ascolto client TCP
-        //Vorrei poter settare queste cose via software e dunque riavviare il thread di segnalazione della presenza
+        public static int tcpPort = 50000; // Listening TCP port (client)
 
 
         public Client()
@@ -48,8 +47,7 @@ namespace Transfar
 
 
         /*
-         * Funzione che avvia l'ascolto di eventuali connessioni da parte di un server che
-         * vorrebbe inviare un file.
+         * Starts the listening of connections from hosts that want to send a file.
          */
         public void StartListening()
         {
@@ -63,7 +61,7 @@ namespace Transfar
 
 
         /*
-         * Funzione per stoppare la ricezione
+         * Stops the listening of connections.
          */
         public void StopListening()
         {
@@ -75,40 +73,30 @@ namespace Transfar
 
 
         /*
-         * Funzione che comunica la presenza ad altri host ogni 100 ms.
-         * Tramite GUI bisognerebbe attivare un thread che esegue questa funzione.
-         * Bisognerebbe uscire dal while premendo un pulsante da GUI.
+         * Sends a broadcast packet for discovery (must be put inside a loop for keeping the discovery active).
          */
         public void Announce()
         {
-            //udpClient.JoinMulticastGroup(IPAddress.Parse(multicastAddress)); Devo solo inviare nel gruppo multicast
             Console.WriteLine("[CLIENT] Sending broadcast datagrams...");
             
             udpClient.Send(announcementBytes, announcementBytes.Length, broadcastEndpoint);
-            //Thread.Sleep(50);
         }
 
 
         /*
-         * Metodo che si occupa di ascoltare le richieste di invio file.
-         * Ad ogni nuova richiesta crea un nuovo thread che si occupa della vera e propria ricezione.
-         * Bisognerebbe uscire dal while a causa dello stesso evento che interrompe la Broadcast()
+         * Listens for file transfer requests, it returns the object representing the 
          */
         public TcpClient ListenRequests()
         {
             Console.WriteLine("[CLIENT] Waiting for incoming file transfers...");
-            TcpClient client = tcpListener.AcceptTcpClient(); //Si blocca fino a che non riceve nuove richieste
+            TcpClient client = tcpListener.AcceptTcpClient(); // Blocking until a new request is received
             return client;
-
-            //Thread receiverThread = new Thread(() => ReceiveFile(client)); //Lambda function per passare il parametro al thread
-            //receiverThread.Start();
-            //while (!receiverThread.IsAlive);
-            ////Bisogna vedere la questione del joining del thread
-
-            //tcpListener.Stop();
         }
         
 
+        /*
+         * Starts receiving the first metadata of the file (host name, file name and file size).
+         */
         public FileTransferData StartReceiving(TcpClient client)
         {
             FileTransferData fileTransferData = new FileTransferData();
@@ -156,7 +144,9 @@ namespace Transfar
         }
 
 
-        // To be in a while loop
+        /*
+         * Receive a chunk of data (to be in a while loop)
+         */
         public void Receive(FileTransferData fileTransferData)
         {
             //fileTransferData.NetworkStream.ReadTimeout = 5000; // HACK: not working
@@ -173,6 +163,9 @@ namespace Transfar
         }
 
 
+        /*
+         * Ends gracefully the file reception.
+         */
         public void EndReceiving(FileTransferData fileTransferData)
         {
             fileTransferData.FileStream.Flush();
@@ -181,6 +174,9 @@ namespace Transfar
         }
 
 
+        /*
+         * Stops the file reception and deletes the file stored. 
+         */
         public void CancelReceiving(FileTransferData fileTransferData)
         {
             fileTransferData.NetworkStream.Dispose();
@@ -189,6 +185,9 @@ namespace Transfar
         }
         
 
+        /*
+         * Old function for command line usage
+         */
         /*
         public void ReceiveFile(TcpClient client)
         {

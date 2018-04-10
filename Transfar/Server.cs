@@ -26,7 +26,6 @@ namespace Transfar
             udpClient = new UdpClient(51000);
             udpClient.EnableBroadcast = true;
             //udpClient.JoinMulticastGroup(IPAddress.Parse("239.255.42.99"));
-
         }
 
 
@@ -44,8 +43,7 @@ namespace Transfar
 
 
         /*
-         * Metodo che si occupa della scoperta di host disponibili.
-         * Il while (availableClients.Count < 1) dovrebbe essere interrotto da un pulsante presente nella GUI.
+         * Discovers hosts that are in public mode (that can accept file transfers).
          */
         public NamedIPEndPoint ClientDiscovery()
         {
@@ -53,29 +51,25 @@ namespace Transfar
 
             if (udpClient.Available > 0)
             {
-                IPEndPoint clientEp = new IPEndPoint(0, 0); //Inizializzo un oggetto "vuoto" di tipo IPEndPoint
+                IPEndPoint clientEp = new IPEndPoint(0, 0); // Initializing an "empty" IPEndPoint
                 
                 var clientRequestData = udpClient.Receive(ref clientEp);
                 var clientRequest = Encoding.ASCII.GetString(clientRequestData);
 
-                if (clientRequest.Contains(tfString)) //Se ho ricevuto il pacchetto di broadcast contente la stringa tfString
+                if (clientRequest.Contains(tfString)) // If I received the broadcast packet containing the tfString
                 {
                     string[] announcement = clientRequest.Split('_');
-                    clientEp.Port = Convert.ToInt32(announcement[2]); //Sostituendo la porta con la porta comunicatami all'interno del payload UDP
+                    clientEp.Port = Convert.ToInt32(announcement[2]); // Replacing the endpoint port with the one received into the UDP payload
                     NamedIPEndPoint namedClientEp = new NamedIPEndPoint(announcement[1], clientEp);
                     if (!availableClients.Contains(namedClientEp))
                     {
-                        availableClients.Add(namedClientEp); //Aggiungo il client alla lista dei client disponibili
+                        availableClients.Add(namedClientEp); // Client added to the list of available clients
                         return namedClientEp;
                     }
                 }
             }
 
             return null;
-
-            //Debug.WriteLine("[SERVER] Received IP addresses:");
-            //foreach (var x in availableClients)
-            //    Debug.WriteLine(x.ToString());
         }
 
 
@@ -85,17 +79,17 @@ namespace Transfar
             fileTransferData.HostName = selectedClient.Name;
 
             TcpClient tcpClient = new TcpClient();
-            tcpClient.Connect(selectedClient.EndPoint); //Mi connetto al relativo client (lancia un'eccezione se non disponibile)
+            tcpClient.Connect(selectedClient.EndPoint); // Connecting to the client specified (throws an exception if not available)
 
             if (Directory.Exists(filePath))
             {
                 string tempPath = Path.GetTempPath() + new DirectoryInfo(filePath).Name + ".zip";
-                if(File.Exists(tempPath)) // check if the file already exists so that ZipFile doesn't throw an exception
+                if(File.Exists(tempPath)) // Check if the file already exists so that ZipFile doesn't throw an exception
                     File.Delete(tempPath);
                 ZipFile.CreateFromDirectory(filePath, tempPath);
                 filePath = tempPath;
             }
-            FileInfo fi = new FileInfo(filePath); //Ottengo informazioni sul file specificato
+            FileInfo fi = new FileInfo(filePath); // Obtaining the infos of the specified file
             fileTransferData.Name = fi.Name;
             fileTransferData.Length = fi.Length;
             Debug.WriteLine("[SERVER] File length of the sent file: " + fileTransferData.Length);
@@ -120,10 +114,6 @@ namespace Transfar
 
             byte[] fileLengthBuffer = BitConverter.GetBytes(fileTransferData.Length);
             fileTransferData.NetworkStream.Write(fileLengthBuffer, 0, fileLengthBuffer.Length);
-
-            //using (FileStream fileStream = File.OpenRead(filePath))
-            //    fileStream.CopyTo(netStream);
-            
             fileTransferData.FileStream = File.OpenRead(filePath);
 
             Debug.WriteLine("[SERVER] Initial file data sent successfully");
@@ -132,7 +122,9 @@ namespace Transfar
         }
 
 
-        // To be in a while loop
+        /*
+         * Sends a chunk of data (to be in a while loop)
+         */
         public void Send(FileTransferData fileTransferData)
         {
             var buffer = new byte[256 * 1024];
@@ -145,6 +137,9 @@ namespace Transfar
         }
 
 
+        /*
+         * Ends gracefully the file transfer.
+         */
         public void EndSending(FileTransferData fileTransferData)
         {
             fileTransferData.NetworkStream.Flush();
@@ -153,6 +148,9 @@ namespace Transfar
         }
 
 
+        /*
+         * Stops the file transfer.
+         */
         public void CancelSending(FileTransferData fileTransferData)
         {
             fileTransferData.NetworkStream.Dispose();
@@ -160,6 +158,9 @@ namespace Transfar
         }
 
 
+        /*
+         * Old function for command line usage
+         */
         /*
         //Funzione che permette la scelta dell'host a cui inviare il file ed invia il file.
         public void SendFile(string fileNamePath)
