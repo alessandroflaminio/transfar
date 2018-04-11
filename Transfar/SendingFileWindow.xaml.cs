@@ -97,7 +97,7 @@ namespace Transfar
 
                         token.ThrowIfCancellationRequested();
 
-                        //Thread.Sleep(500); // Waiting for testing purposes
+                        //HACK: waiting for testing purposes //Thread.Sleep(500);
 
                         progressIndicator.Report(100 - ((float)fileTransferData.Length / originalLength * 100));
                     }
