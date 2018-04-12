@@ -17,6 +17,9 @@ namespace Transfar
         private TcpClient tcpClient;
         private long originalLength;
         private FileTransferData fileTransferData;
+        private long timestamp;
+
+        private int updateEstimation = 0;
 
         private CancellationTokenSource cts;
 
@@ -119,8 +122,21 @@ namespace Transfar
         private void Cancel_Button_Click(object sender, RoutedEventArgs e) => cts.Cancel();
 
 
-        private void ReportProgress(double value) => progressBar.Value = value;
+        private void ReportProgress(double value)
+        {
+            double oldValue = progressBar.Value;
+            double diffValue = value - oldValue;
+            progressBar.Value = value;
 
+            long nowTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(); // if i took diff seconds for transferring the diffValue, then I can perform an estimation of the remaining time
+            long diffTime = nowTime - timestamp;
+            timestamp = nowTime;
+
+            TimeSpan remainingTime = TimeSpan.FromMilliseconds(Math.Ceiling((diffTime * (100 - value)) / diffValue));
+            if (updateEstimation == 0)
+                remainingTimeBlock.Text = "Remaining time: " + remainingTime.Minutes + " minutes and " + remainingTime.Seconds + " seconds";
+            updateEstimation = (updateEstimation + 1) % 5; // this is done for preventing inconsistent updates of the estimated time
+        }
 
         private async Task ReceiveFileAsync(IProgress<double> progressIndicator, CancellationToken token)
         {
@@ -129,6 +145,8 @@ namespace Transfar
                 try
                 {
                     token.ThrowIfCancellationRequested();
+
+                    timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(); // initializing the timestamp at the beginning of the transfer
 
                     while (fileTransferData.Length > 0)
                     {

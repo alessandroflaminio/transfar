@@ -42,7 +42,11 @@ namespace Transfar
         }
 
 
-        private void ExitTransfarClick(object sender, EventArgs e) => Application.Current.Shutdown(); // TODO: tray icon visible even after closing the app
+        private void ExitTransfarClick(object sender, EventArgs e)
+        {
+            Ni.Dispose();
+            Application.Current.Shutdown(); // TODO: tray icon visible even after closing the app
+        }
 
 
         private void ShowTransfarClick(object sender, EventArgs e) => this.Show();
