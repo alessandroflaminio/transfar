@@ -17,9 +17,10 @@ namespace Transfar
         private TcpClient tcpClient;
         private long originalLength;
         private FileTransferData fileTransferData;
-        private long timestamp;
 
-        private int updateEstimation = 0;
+        private long timestamp;
+        private int updateEstimation;
+        private double oldValue;
 
         private CancellationTokenSource cts;
 
@@ -38,7 +39,9 @@ namespace Transfar
                 mainWindow.Ni.BalloonTipText = "Receiving file " + fileTransferData.Name + " from " + fileTransferData.HostName;
                 mainWindow.Ni.ShowBalloonTip(3000);
 
-                Yes_Button_Click(this, new RoutedEventArgs()); // HACK: to check that
+                this.Show();
+                this.Activate();
+                Yes_Button_Click(null, null);
             }
             else
             {
@@ -51,6 +54,12 @@ namespace Transfar
 
         private async void Yes_Button_Click(object sender, RoutedEventArgs e)
         {
+            progressBar.Visibility = Visibility.Visible;
+            cancelButton.Visibility = Visibility.Visible;
+            yesButton.Visibility = Visibility.Hidden;
+            noButton.Visibility = Visibility.Hidden;
+            fileInfo.Text = "Receiving file " + fileTransferData.Name + " from " + fileTransferData.HostName + "...";
+
             if (!Properties.Settings.Default.SetPath) // if the path must be chosen each time the user receives a file
             {
                 using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
@@ -89,12 +98,6 @@ namespace Transfar
             fileTransferData.FileStream = File.Create(fileTransferData.Path);
             originalLength = fileTransferData.Length;
 
-            progressBar.Visibility = Visibility.Visible;
-            cancelButton.Visibility = Visibility.Visible;
-            yesButton.Visibility = Visibility.Hidden;
-            noButton.Visibility = Visibility.Hidden;
-            fileInfo.Text = "Receiving file " + fileTransferData.Name + " from " + fileTransferData.HostName + "...";
-
             cts = new CancellationTokenSource();
             var progressIndicator = new Progress<double>(ReportProgress);
 
@@ -124,18 +127,22 @@ namespace Transfar
 
         private void ReportProgress(double value)
         {
-            double oldValue = progressBar.Value;
-            double diffValue = value - oldValue;
-            progressBar.Value = value;
-
-            long nowTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(); // if i took diff seconds for transferring the diffValue, then I can perform an estimation of the remaining time
-            long diffTime = nowTime - timestamp;
-            timestamp = nowTime;
-
-            TimeSpan remainingTime = TimeSpan.FromMilliseconds(Math.Ceiling((diffTime * (100 - value)) / diffValue));
             if (updateEstimation == 0)
-                remainingTimeBlock.Text = "Remaining time: " + remainingTime.Minutes + " minutes and " + remainingTime.Seconds + " seconds";
-            updateEstimation = (updateEstimation + 1) % 5; // this is done for preventing inconsistent updates of the estimated time
+            {
+                double diffValue = value - oldValue;
+                oldValue = value;
+
+                long nowTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(); // if i took diff seconds for transferring the diffValue, then I can perform an estimation of the remaining time
+                long diffTime = nowTime - timestamp;
+                timestamp = nowTime;
+
+                TimeSpan remainingTime = TimeSpan.FromMilliseconds(Math.Ceiling((diffTime * (100 - value)) / diffValue));
+                if (remainingTime.TotalSeconds > 0)
+                    remainingTimeBlock.Text = "Remaining time: " + remainingTime.Minutes + " minutes and " + remainingTime.Seconds + " seconds";
+            }
+            updateEstimation = (updateEstimation + 1) % 15; // this is done for preventing inconsistent updates of the estimated time
+
+            progressBar.Value = value;
         }
 
         private async Task ReceiveFileAsync(IProgress<double> progressIndicator, CancellationToken token)
@@ -146,6 +153,8 @@ namespace Transfar
                 {
                     token.ThrowIfCancellationRequested();
 
+                    updateEstimation = 1;
+                    oldValue = 0;
                     timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(); // initializing the timestamp at the beginning of the transfer
 
                     while (fileTransferData.Length > 0)
@@ -165,13 +174,18 @@ namespace Transfar
                     client.CancelReceiving(fileTransferData);
                     throw;
                 }
-                catch (SocketException)
+                catch (Exception e)
                 {
-                    client.CancelReceiving(fileTransferData);
+                    if (e is SocketException || e is IOException)
+                    {
+                        client.CancelReceiving(fileTransferData);
 
-                    MessageBox.Show("There was an error in receiving the file.", "Transfar", MessageBoxButton.OK,
-                        MessageBoxImage.Stop, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
-                    throw new OperationCanceledException();
+                        MessageBox.Show("There was an error in receiving the file.", "Transfar", MessageBoxButton.OK,
+                            MessageBoxImage.Stop, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+                        throw new OperationCanceledException();
+                    }
+
+                    throw;
                 }
             }, token);
         }

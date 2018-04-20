@@ -16,9 +16,10 @@ namespace Transfar
         private string filePath;
         private long originalLength;
         private FileTransferData fileTransferData;
-        private long timestamp;
 
-        private int updateEstimation = 0;
+        private long timestamp;
+        private int updateEstimation;
+        private double oldValue;
 
         private CancellationTokenSource cts;
 
@@ -39,18 +40,22 @@ namespace Transfar
 
         private void ReportProgress(double value)
         {
-            double oldValue = progressBar.Value;
-            double diffValue = value - oldValue;
-            progressBar.Value = value;
-
-            long nowTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(); // if i took diff seconds for transferring the diffValue, then I can perform an estimation of the remaining time
-            long diffTime = nowTime - timestamp;
-            timestamp = nowTime;
-            
-            TimeSpan remainingTime = TimeSpan.FromMilliseconds(Math.Ceiling((diffTime * (100 - value)) / diffValue));
             if (updateEstimation == 0)
-                remainingTimeBlock.Text = "Remaining time: " + remainingTime.Minutes + " minutes and " + remainingTime.Seconds + " seconds";
-            updateEstimation = (updateEstimation + 1) % 5; // this is done for preventing inconsistent updates of the estimated time
+            {
+                double diffValue = value - oldValue;
+                oldValue = value;
+
+                long nowTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(); // if i took diff seconds for transferring the diffValue, then I can perform an estimation of the remaining time
+                long diffTime = nowTime - timestamp;
+                timestamp = nowTime;
+
+                TimeSpan remainingTime = TimeSpan.FromMilliseconds(Math.Ceiling((diffTime * (100 - value)) / diffValue));
+                if (remainingTime.TotalSeconds > 0)
+                    remainingTimeBlock.Text = "Remaining time: " + remainingTime.Minutes + " minutes and " + remainingTime.Seconds + " seconds";
+            }
+            updateEstimation = (updateEstimation + 1) % 15; // this is done for preventing inconsistent updates of the estimated time
+
+            progressBar.Value = value;
         }
 
         private async void StartSending()
@@ -97,6 +102,8 @@ namespace Transfar
                 {
                     token.ThrowIfCancellationRequested();
 
+                    updateEstimation = 1;
+                    oldValue = 0;
                     timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(); // initializing the timestamp at the beginning of the transfer
 
                     while (fileTransferData.Length > 0)
