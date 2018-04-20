@@ -98,10 +98,10 @@ namespace Transfar
             fileTransferData.NetworkStream = tcpClient.GetStream();
             fileTransferData.NetworkStream.WriteTimeout = 20000;
 
-            byte[] hostNameLengthBuffer = BitConverter.GetBytes(Encoding.Unicode.GetByteCount(fileTransferData.HostName));
+            byte[] hostNameLengthBuffer = BitConverter.GetBytes(Encoding.Unicode.GetByteCount(Environment.UserName));
             fileTransferData.NetworkStream.Write(hostNameLengthBuffer, 0, hostNameLengthBuffer.Length);
 
-            byte[] hostNameBuffer = Encoding.Unicode.GetBytes(fileTransferData.HostName);
+            byte[] hostNameBuffer = Encoding.Unicode.GetBytes(Environment.UserName);
             fileTransferData.NetworkStream.Write(hostNameBuffer, 0, hostNameBuffer.Length);
 
 
