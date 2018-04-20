@@ -21,6 +21,8 @@ namespace Transfar
                 server = new Server();
 
                 InitializeComponent();
+
+                startButton_Click(null, null); // HACK: Added so that it's not necessary to press the start button
         }
 
         public ClientDiscoveryWindow(string filePath) // Constructor when you don't need to open the file picker
@@ -35,6 +37,8 @@ namespace Transfar
             sendButton.Content = "Send file";
             sendButton.Click -= sendButton_Click;
             sendButton.Click += sendButtonContextual_Click;
+
+            startButton_Click(null, null); // HACK: Added so that it's not necessary to press the start button
         }
 
         private async void startButton_Click(object sender, RoutedEventArgs e)
