@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Interop;
 
 namespace Transfar
 {
@@ -22,6 +24,14 @@ namespace Transfar
         private double oldValue;
 
         private CancellationTokenSource cts;
+        
+        // For hiding the close button
+        private const int GWL_STYLE = -16;
+        private const int WS_SYSMENU = 0x80000;
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
 
         public SendingFileWindow(Server server, NamedIPEndPoint selectedClient, string filePath)
@@ -32,6 +42,13 @@ namespace Transfar
             InitializeComponent();
 
             StartSending();
+        }
+
+
+        private void SendingFileWindowLoaded(object sender, RoutedEventArgs e)
+        {
+            var hwnd = new WindowInteropHelper(this).Handle;
+            SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_SYSMENU);
         }
 
 

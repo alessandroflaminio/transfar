@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Transfar"
         mc:Ignorable="d"
-        Title="Transfar - Receiving file" Height="300" Width="300" ResizeMode="NoResize">
+        Title="Transfar - Receiving file" Height="300" Width="300" ResizeMode="NoResize" Loaded="ReceivingFileWindowLoaded">
     <Grid>
         <Button x:Name="yesButton" Content="Yes" Margin="30,198,187,0" VerticalAlignment="Top" Click="Yes_Button_Click"/>
         <Button x:Name="noButton" Content="No" Margin="187,198,30,0" VerticalAlignment="Top" Click="No_Button_Click"/>
